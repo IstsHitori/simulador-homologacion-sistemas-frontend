@@ -44,9 +44,9 @@ export const useUpdateStudent = () => {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateStudentDto }) =>
       updateStudent(id, data),
-    onSuccess: (message) => {
+    onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
-      toast.success(message || "Estudiante actualizado correctamente");
+      toast.success(result.message || "Estudiante actualizado correctamente");
     },
     onError: (error: Error) => {
       toast.error(error.message || "Error al actualizar el estudiante");

@@ -54,10 +54,13 @@ export const createStudent = async (
 export const updateStudent = async (
   id: string,
   data: UpdateStudentDto
-): Promise<string> => {
+): Promise<CreateStudentResponse> => {
   try {
-    const response = await axiosPrivate.patch(`/student/${id}`, data);
-    return response.data;
+    return await fetchAndValidate(
+      () => axiosPrivate.patch(`/student/${id}`, data),
+      createStudentResponseSchema,
+      "Error al actualizar el estudiante"
+    );
   } catch (error) {
     catchAndValidateError(error);
     throw error;
