@@ -82,20 +82,6 @@ export function LoginForm() {
               </Button>
             }
           </form>
-
-          <div className="mt-6 p-4 bg-muted rounded-lg">
-            <p className="text-sm text-muted-foreground mb-2">
-              Credenciales de prueba:
-            </p>
-            <div className="text-xs space-y-1">
-              <p>
-                <strong>Admin:</strong> usuario: admin, contraseña: 12345
-              </p>
-              <p>
-                <strong>Médico:</strong> usuario: medico, contraseña: medico123
-              </p>
-            </div>
-          </div>
         </CardContent>
       </Card>
     </div>
