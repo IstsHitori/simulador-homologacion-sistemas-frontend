@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { GraduationCap, Users, BookOpen, TrendingUp } from "lucide-react";
 import useAuth from "@/domain/auth/hooks/useAuth";
@@ -36,19 +37,34 @@ export function HomePage() {
   ];
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div>
+    <div className="space-y-6">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
-          <GraduationCap className="h-8 w-8 text-primary" />
+          <motion.div
+            animate={{ rotate: [0, 360] }}
+            transition={{ duration: 2, repeat: Infinity, repeatDelay: 5, ease: "easeInOut" }}
+          >
+            <GraduationCap className="h-8 w-8 text-primary" />
+          </motion.div>
           Bienvenido, {profile.fullName}
         </h1>
         <p className="text-muted-foreground mt-1">
           Simulador de Homologación de Estudiantes - Universidad Popular Del Cesar
         </p>
-        <Badge variant={profile.role === "admin" ? "default" : "secondary"} className="mt-2">
-          {profile.role === "admin" ? "Administrador" : "Usuario Normal"}
-        </Badge>
-      </div>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3, duration: 0.3 }}
+        >
+          <Badge variant={profile.role === "admin" ? "default" : "secondary"} className="mt-2">
+            {profile.role === "admin" ? "Administrador" : "Usuario Normal"}
+          </Badge>
+        </motion.div>
+      </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {stats
@@ -56,37 +72,60 @@ export function HomePage() {
           .map((stat, index) => {
             const Icon = stat.icon;
             return (
-              <Card
+              <motion.div
                 key={index}
-                className="shadow-sm hover:shadow-md transition-smooth border-l-4"
-                style={{ borderLeftColor: stat.color }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 + 0.2, duration: 0.4 }}
+                whileHover={{ y: -8, transition: { duration: 0.2 } }}
               >
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    {stat.title}
-                  </CardTitle>
-                  <div className={`p-2 rounded-lg ${stat.bgColor}`}>
-                    <Icon className={`h-5 w-5 ${stat.color}`} />
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold">{stat.value}</div>
-                </CardContent>
-              </Card>
+                <Card
+                  className="shadow-sm hover:shadow-lg transition-all border-l-4 h-full"
+                  style={{ borderLeftColor: stat.color }}
+                >
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      {stat.title}
+                    </CardTitle>
+                    <motion.div 
+                      className={`p-2 rounded-lg ${stat.bgColor}`}
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Icon className={`h-5 w-5 ${stat.color}`} />
+                    </motion.div>
+                  </CardHeader>
+                  <CardContent>
+                    <motion.div 
+                      className="text-3xl font-bold"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: index * 0.1 + 0.4, type: "spring", stiffness: 200 }}
+                    >
+                      {stat.value}
+                    </motion.div>
+                  </CardContent>
+                </Card>
+              </motion.div>
             );
           })}
       </div>
 
-      <Card className="shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="h-5 w-5 text-primary" />
-            Información del Sistema
-          </CardTitle>
-          <CardDescription>
-            Panel de control del simulador de homologación
-          </CardDescription>
-        </CardHeader>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6, duration: 0.5 }}
+      >
+        <Card className="shadow-sm hover:shadow-md transition-all">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-primary" />
+              Información del Sistema
+            </CardTitle>
+            <CardDescription>
+              Panel de control del simulador de homologación
+            </CardDescription>
+          </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <h3 className="font-semibold text-foreground">Funcionalidades Disponibles:</h3>
@@ -142,6 +181,7 @@ export function HomePage() {
           </div>
         </CardContent>
       </Card>
+      </motion.div>
     </div>
   );
 }

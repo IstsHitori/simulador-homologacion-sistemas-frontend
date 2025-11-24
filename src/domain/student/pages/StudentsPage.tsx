@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "motion/react";
 import {
   Card,
   CardContent,
@@ -89,9 +90,18 @@ export function StudentsPage() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
+    <div className="space-y-6">
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+      >
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+        >
           <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
             <Users className="h-8 w-8 text-primary" />
             Gestión de Estudiantes
@@ -99,46 +109,71 @@ export function StudentsPage() {
           <p className="text-muted-foreground mt-1">
             Administra y simula homologaciones de estudiantes
           </p>
-        </div>
-        <Button
-          onClick={() => {
-            setSelectedStudent(null);
-            setIsCreateOpen(true);
-          }}
-          className="gap-2 shadow-sm hover:shadow-md transition-smooth"
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
-          <Plus className="h-4 w-4" />
-          Nuevo Estudiante
-        </Button>
-      </div>
+          <Button
+            onClick={() => {
+              setSelectedStudent(null);
+              setIsCreateOpen(true);
+            }}
+            className="gap-2 shadow-sm hover:shadow-md transition-smooth"
+          >
+            <Plus className="h-4 w-4" />
+            Nuevo Estudiante
+          </Button>
+        </motion.div>
+      </motion.div>
 
-      <Card className="shadow-sm hover:shadow-md transition-smooth">
-        <CardHeader>
-          <CardTitle className="text-xl">Estudiantes Registrados</CardTitle>
-          <CardDescription>
-            {students?.length || 0} estudiante
-            {students?.length !== 1 ? "s" : ""} en total
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar por identificación, nombre o email..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+      >
+        <Card className="shadow-sm hover:shadow-md transition-smooth">
+          <CardHeader>
+            <CardTitle className="text-xl">Estudiantes Registrados</CardTitle>
+            <CardDescription>
+              {students?.length || 0} estudiante
+              {students?.length !== 1 ? "s" : ""} en total
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4, delay: 0.4 }}
+              className="relative"
+            >
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar por identificación, nombre o email..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </motion.div>
 
-          <StudentTable
-            students={filteredStudents || []}
-            onView={handleView}
-            onEdit={handleEdit}
-            onDelete={handleDeleteClick}
-          />
-        </CardContent>
-      </Card>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4, delay: 0.5 }}
+            >
+              <StudentTable
+                students={filteredStudents || []}
+                onView={handleView}
+                onEdit={handleEdit}
+                onDelete={handleDeleteClick}
+              />
+            </motion.div>
+          </CardContent>
+        </Card>
+      </motion.div>
 
       <CreateStudentDialog
         open={isCreateOpen}

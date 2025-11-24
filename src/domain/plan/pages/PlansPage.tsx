@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +19,11 @@ export function PlansPage() {
   }
 
   const SubjectCard = ({ subject }: { subject: Subject }) => (
-    <div className="p-4 border rounded-lg hover:shadow-md hover:bg-muted/30 transition-smooth">
+    <motion.div
+      whileHover={{ scale: 1.02, y: -4 }}
+      transition={{ duration: 0.2 }}
+      className="p-4 border rounded-lg hover:shadow-md hover:bg-muted/30 transition-smooth"
+    >
       <div className="flex justify-between items-start gap-4">
         <div className="flex-1">
           <h4 className="font-semibold text-lg text-foreground">{subject.name}</h4>
@@ -39,7 +44,7 @@ export function PlansPage() {
           </Badge>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 
   // Group subjects by semester
@@ -58,8 +63,13 @@ export function PlansPage() {
   const newPlanBySemester = plans ? groupBySemester(plans.newPlan.subjects) : {};
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="space-y-6">
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+      >
         <div>
           <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
             <GraduationCap className="h-8 w-8 text-primary" />
@@ -69,22 +79,27 @@ export function PlansPage() {
             Consulta los planes académicos actuales y propuestos
           </p>
         </div>
-      </div>
+      </motion.div>
 
-      <Tabs defaultValue="old" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 max-w-md">
-          <TabsTrigger value="old" className="gap-2">
-            <BookOpen className="h-4 w-4" />
-            Plan Actual
-          </TabsTrigger>
-          <TabsTrigger value="new" className="gap-2">
-            <BookOpen className="h-4 w-4" />
-            Plan Propuesto
-          </TabsTrigger>
-        </TabsList>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
+        <Tabs defaultValue="old" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 max-w-md">
+            <TabsTrigger value="old" className="gap-2">
+              <BookOpen className="h-4 w-4" />
+              Plan Actual
+            </TabsTrigger>
+            <TabsTrigger value="new" className="gap-2">
+              <BookOpen className="h-4 w-4" />
+              Plan Propuesto
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Plan Actual */}
-        <TabsContent value="old" className="space-y-6 mt-6">
+          {/* Plan Actual */}
+          <TabsContent value="old" className="space-y-6 mt-6">
           <Card className="shadow-sm">
             <CardHeader>
               <div className="flex justify-between items-start">
@@ -160,7 +175,8 @@ export function PlansPage() {
             </CardContent>
           </Card>
         </TabsContent>
-      </Tabs>
+        </Tabs>
+      </motion.div>
     </div>
   );
 }

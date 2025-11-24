@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -117,27 +118,39 @@ export function NavigationMenu() {
           <div className="flex-1 px-4 space-y-1">
             {menuItems
               .filter((item) => item.available)
-              .map((item) => {
+              .map((item, index) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
 
                 return (
-                  <Link
+                  <motion.div
                     key={item.path}
-                    to={item.path}
-                    onClick={handleMobileMenuClose}
-                    className={`
-                      flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors
-                      ${
-                        isActive
-                          ? "bg-muted text-foreground"
-                          : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                      }
-                    `}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1, duration: 0.3 }}
                   >
-                    <Icon className="h-5 w-5" />
-                    <span>{item.label}</span>
-                  </Link>
+                    <Link
+                      to={item.path}
+                      onClick={handleMobileMenuClose}
+                      className="block"
+                    >
+                      <motion.div
+                        whileHover={{ scale: 1.02, x: 4 }}
+                        whileTap={{ scale: 0.98 }}
+                        className={`
+                          flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+                          ${
+                            isActive
+                              ? "bg-muted text-foreground"
+                              : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                          }
+                        `}
+                      >
+                        <Icon className="h-5 w-5" />
+                        <span>{item.label}</span>
+                      </motion.div>
+                    </Link>
+                  </motion.div>
                 );
               })}
           </div>
@@ -161,7 +174,7 @@ export function NavigationMenu() {
               className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors"
             >
               <HelpCircle className="h-5 w-5" />
-              <span>Get Help</span>
+              <span>Ayuda</span>
             </button>
           </div>
 
@@ -222,7 +235,7 @@ export function NavigationMenu() {
               <p className="text-sm font-medium text-foreground">Contacto del Desarrollador:</p>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Mail className="h-4 w-4" />
-                <span>desarrollador@upc.edu.co</span>
+                <span>correo no disponible</span>
               </div>
             </div>
             
