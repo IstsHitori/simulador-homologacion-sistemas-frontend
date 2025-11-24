@@ -29,8 +29,9 @@ export const useCreateStudent = () => {
 
   return useMutation({
     mutationFn: createStudent,
-    onSuccess: () => {
+    onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
+      toast.success(result.message || "Estudiante creado correctamente");
     },
     onError: (error: Error) => {
       toast.error(error.message || "Error al crear el estudiante");

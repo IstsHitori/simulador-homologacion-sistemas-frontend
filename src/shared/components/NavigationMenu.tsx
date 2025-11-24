@@ -21,7 +21,6 @@ import {
   UserCog,
   Settings,
   HelpCircle,
-  CirclePlus,
   Mail,
 } from "lucide-react";
 import useAuth from "@/domain/auth/hooks/useAuth";
@@ -103,17 +102,6 @@ export function NavigationMenu() {
             </Button>
           </div>
 
-          {/* Quick Create Button */}
-          <div className="px-4 mb-4">
-            <Button
-              className="w-full justify-start gap-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg"
-              size="default"
-            >
-              <CirclePlus className="h-4 w-4" />
-              Quick Create
-            </Button>
-          </div>
-
           {/* Main Navigation */}
           <div className="flex-1 px-4 space-y-1">
             {menuItems
@@ -159,7 +147,7 @@ export function NavigationMenu() {
 
           {/* Bottom Actions */}
           <div className="px-4 pb-4 space-y-1">
-            <button 
+            <button
               onClick={() => {
                 navigate("/app/settings");
                 handleMobileMenuClose();
@@ -169,7 +157,7 @@ export function NavigationMenu() {
               <Settings className="h-5 w-5" />
               <span>Configuración</span>
             </button>
-            <button 
+            <button
               onClick={() => setIsHelpDialogOpen(true)}
               className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors"
             >
@@ -226,19 +214,22 @@ export function NavigationMenu() {
               ¿Necesitas ayuda?
             </DialogTitle>
             <DialogDescription className="text-base pt-4">
-              Si necesitas solicitar ayuda o reportar algún problema, por favor contacta con el desarrollador.
+              Si necesitas solicitar ayuda o reportar algún problema, por favor
+              contacta con el desarrollador.
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4 pt-4">
             <div className="p-4 bg-muted/50 rounded-lg space-y-2">
-              <p className="text-sm font-medium text-foreground">Contacto del Desarrollador:</p>
+              <p className="text-sm font-medium text-foreground">
+                Contacto del Desarrollador:
+              </p>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Mail className="h-4 w-4" />
                 <span>correo no disponible</span>
               </div>
             </div>
-            
+
             <div className="flex justify-end gap-3">
               <Button
                 variant="outline"

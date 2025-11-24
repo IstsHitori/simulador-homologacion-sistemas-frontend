@@ -42,6 +42,16 @@ export const studentSchema = z.object({
 
 export const createStudentResponseSchema = z.object({
   message: z.string(),
+  student: z.object({
+    identification: z.string(),
+    email: z.string(),
+    names: z.string(),
+    lastNames: z.string(),
+    semester: z.number(),
+    cityResidence: z.string(),
+    telephone: z.string(),
+    gender: z.enum(["Masculino", "Femenino", "Otro"]),
+  }),
   subjectsToHomologate: z.array(subjectSchema),
   approvedSubjects: z.array(subjectSchema),
 });

@@ -37,7 +37,14 @@ export function HomologationResultDialog({
             <CheckCircle2 className="h-6 w-6 text-accent" />
             Resultado de Homologación
           </DialogTitle>
-          <DialogDescription>{result.message}</DialogDescription>
+          <DialogDescription>
+            <span className="block text-base font-semibold text-foreground mt-2">
+              {result.student.names} {result.student.lastNames}
+            </span>
+            <span className="text-sm text-muted-foreground">
+              ID: {result.student.identification}
+            </span>
+          </DialogDescription>
         </DialogHeader>
 
         <ScrollArea className="flex-1 min-h-0">

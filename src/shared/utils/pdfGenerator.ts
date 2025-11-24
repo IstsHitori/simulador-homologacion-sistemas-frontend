@@ -32,12 +32,31 @@ export const generateHomologationPDF = (result: CreateStudentResponse) => {
   doc.setDrawColor(200, 200, 200);
   doc.line(20, 42, 190, 42);
 
-  // Message
+  // Información del Estudiante
   doc.setFontSize(12);
-  doc.setTextColor(0, 0, 0);
-  doc.text(result.message, 20, 52);
+  doc.setTextColor(59, 130, 246); // Primary color
+  doc.text("Información del Estudiante", 20, 50);
 
-  let yPosition = 62;
+  doc.setFontSize(10);
+  doc.setTextColor(0, 0, 0);
+
+  const studentInfo = [
+    `Nombre: ${result.student.names} ${result.student.lastNames}`,
+    `Identificación: ${result.student.identification}`,
+    `Email: ${result.student.email}`,
+    `Semestre: ${result.student.semester}`,
+    `Género: ${result.student.gender}`,
+    `Ciudad: ${result.student.cityResidence}`,
+    `Teléfono: ${result.student.telephone}`,
+  ];
+
+  let infoY = 58;
+  studentInfo.forEach((info) => {
+    doc.text(info, 25, infoY);
+    infoY += 6;
+  });
+
+  let yPosition = infoY + 8;
 
   // Materias a Homologar
   if (result.subjectsToHomologate.length > 0) {
