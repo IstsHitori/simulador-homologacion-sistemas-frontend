@@ -74,6 +74,7 @@ export function CreateStudentDialog({
     setValue,
     watch,
     trigger,
+    clearErrors,
   } = useForm<StudentFormValues>({
     resolver: zodResolver(studentFormSchema),
     defaultValues: {
@@ -104,6 +105,7 @@ export function CreateStudentDialog({
     if (!open) return;
 
     setCurrentStep(1);
+    clearErrors(); // Limpiar errores del formulario
 
     if (isEditing && studentDetails) {
       // Cargar datos del estudiante
@@ -123,7 +125,7 @@ export function CreateStudentDialog({
       reset();
       setSelectedSubjects([]);
     }
-  }, [open, isEditing, studentDetails, student, setValue, reset]);
+  }, [open, isEditing, studentDetails, student, setValue, reset, clearErrors]);
 
   // Función para crear/actualizar estudiante
   const onSubmit = useCallback(
