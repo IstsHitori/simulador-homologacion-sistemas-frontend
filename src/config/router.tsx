@@ -1,10 +1,15 @@
 import { LoginForm } from "@/domain/auth/components/LoginForm";
 import PrivateLayout from "@/shared/layouts/PrivateLayout";
 import PublicLayout from "@/shared/layouts/PublicLayout";
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
+import { StudentsPage } from "@/domain/student/pages/StudentsPage";
+import { PlansPage } from "@/domain/plan/pages/PlansPage";
+import { UsersPage } from "@/domain/user/pages/UsersPage";
+import { HomePage } from "@/shared/pages/HomePage";
+import { ProtectedRoute } from "@/shared/components/ProtectedRoute";
 
 export const router = createBrowserRouter([
-  //Public layaut donde esta el login
+  //Public layout donde esta el login
   {
     path: "/",
     element: <PublicLayout />,
@@ -15,10 +20,35 @@ export const router = createBrowserRouter([
       },
     ],
   },
-  //Private layaout, la aplicacion dentro en si
+  //Private layout, la aplicacion dentro en si
   {
     path: "/app",
     element: <PrivateLayout />,
-    children: [],
+    children: [
+      {
+        path: "",
+        element: <Navigate to="/app/home" replace />,
+      },
+      {
+        path: "home",
+        element: <HomePage />,
+      },
+      {
+        path: "students",
+        element: <StudentsPage />,
+      },
+      {
+        path: "plans",
+        element: <PlansPage />,
+      },
+      {
+        path: "users",
+        element: (
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <UsersPage />
+          </ProtectedRoute>
+        ),
+      },
+    ],
   },
 ]);

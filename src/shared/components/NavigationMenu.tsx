@@ -3,14 +3,15 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  Brain,
-  BarChart3,
-  Settings,
-  Stethoscope,
+  GraduationCap,
+  Users,
+  BookOpen,
   Home,
   Menu,
   X,
   LogOut,
+  UserCog,
+  Brain,
 } from "lucide-react";
 import useAuth from "@/domain/auth/hooks/useAuth";
 import { useLogout } from "@/domain/auth/hooks/useLogout";
@@ -33,30 +34,30 @@ export function NavigationMenu() {
       available: true,
     },
     {
-      path: "/app/analysis",
-      label: "Análisis IA",
-      icon: Brain,
-      description: "Analizar imágenes cerebrales",
+      path: "/app/students",
+      label: "Estudiantes",
+      icon: Users,
+      description: "Gestión de estudiantes",
       color: "text-primary",
       bgColor: "bg-primary/10",
       available: true,
     },
     {
-      path: "/app/medical-dashboard",
-      label: "Dashboard Médico",
-      icon: BarChart3,
-      description: "Estadísticas y pacientes",
-      color: "text-secondary",
-      bgColor: "bg-secondary/10",
+      path: "/app/plans",
+      label: "Planes",
+      icon: BookOpen,
+      description: "Planes de estudio",
+      color: "text-accent",
+      bgColor: "bg-accent/10",
       available: true,
     },
     {
-      path: "/app/admin",
-      label: "Administración",
-      icon: Settings,
-      description: "Gestión del sistema",
-      color: "text-red-600",
-      bgColor: "bg-red-50",
+      path: "/app/users",
+      label: "Usuarios",
+      icon: UserCog,
+      description: "Gestión de usuarios",
+      color: "text-destructive",
+      bgColor: "bg-destructive/10",
       available: profile.role === "admin",
     },
   ];
@@ -86,14 +87,14 @@ export function NavigationMenu() {
             {!isCollapsed && (
               <div className="flex items-center gap-2">
                 <div className="p-1.5 bg-primary/10 rounded-lg">
-                  <Brain className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+                  <GraduationCap className="h-5 w-5 md:h-6 md:w-6 text-primary" />
                 </div>
                 <div>
                   <h1 className="text-base md:text-lg font-bold text-foreground">
-                    NeuroAnalyzer
+                    UPC Homologación
                   </h1>
                   <p className="text-xs text-muted-foreground hidden sm:block">
-                    Análisis de Alzheimer
+                    Simulador de Homologación
                   </p>
                 </div>
               </div>
@@ -121,18 +122,18 @@ export function NavigationMenu() {
           </div>
 
           {!isCollapsed && (
-            <Card className="mb-4 bg-gradient-to-r from-primary/5 to-secondary/5">
+            <Card className="mb-4 bg-gradient-to-r from-primary/5 to-accent/5">
               <CardContent className="p-3">
                 <div className="flex items-center gap-2">
                   <div className="p-1.5 bg-primary/10 rounded-full">
-                    <Stethoscope className="h-4 w-4 text-primary" />
+                    <UserCog className="h-4 w-4 text-primary" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-foreground">
-                      Dr. {profile.name}
+                      {profile.fullName}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {profile.role === "admin" ? "Admin" : "Médico"}
+                      {profile.role === "admin" ? "Administrador" : "Usuario"}
                     </p>
                   </div>
                 </div>

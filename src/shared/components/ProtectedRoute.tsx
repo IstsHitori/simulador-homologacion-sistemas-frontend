@@ -9,6 +9,7 @@ interface ProtectedRouteProps {
 
 export const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
   const profile = useAuthStore((state) => state.profile);
+  
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   const userRole = profile?.role?.toLowerCase();
