@@ -13,6 +13,7 @@ import useLoginForm from "../hooks/useLoginForm";
 import type { LoginPayload } from "../types";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export function LoginForm() {
   const { handleSubmit, register, mutate, errors, isPending } = useLoginForm();
@@ -27,7 +28,7 @@ export function LoginForm() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold text-primary">
-            Plataforma de Análisis de Alzheimer
+            Simulador de homologación de estudiantes de sistemas
           </CardTitle>
           <CardDescription>
             Ingrese sus credenciales para acceder al sistema
@@ -81,6 +82,12 @@ export function LoginForm() {
                 {isPending ? "Iniciando sesión..." : "Iniciar Sesión"}
               </Button>
             }
+            <Link
+              to="recuperar-contraseña"
+              className="block w-full text-center text-sm text-primary hover:underline transition-colors mt-2 font-medium"
+            >
+              Recuperar mi contraseña
+            </Link>
           </form>
         </CardContent>
       </Card>
