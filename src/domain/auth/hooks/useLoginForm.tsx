@@ -29,8 +29,8 @@ export default function useLoginForm() {
   //Tanstack query
   const { mutate, isPending } = useMutation({
     mutationFn: loginAuth,
-    onError: (error) => {
-      toast.error(error.message, {
+    onError: ({ message }: Error) => {
+      toast.error(message, {
         action: {
           label: "Cerrar",
           onClick: () => console.log(),

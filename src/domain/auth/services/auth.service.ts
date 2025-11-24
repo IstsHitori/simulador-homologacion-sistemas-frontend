@@ -14,6 +14,7 @@ export const loginAuth = async (payload: LoginPayload) => {
     );
     return response.data.token as string;
   } catch (error) {
+    
     catchAndValidateError(error);
   }
 };
