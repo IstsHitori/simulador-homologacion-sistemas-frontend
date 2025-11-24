@@ -48,7 +48,7 @@ export default function PrivateLayout() {
     <div className="min-h-screen bg-linear-to-br from-primary/5 to-accent/5 flex animate-fade-in">
       <NavigationMenu />
 
-      <main className="flex-1 ml-16 lg:ml-64 p-3 sm:p-4 lg:p-6 animate-slide-up transition-all duration-300">
+      <main className="flex-1 ml-0 lg:ml-72 p-3 sm:p-4 lg:p-6 animate-slide-up transition-all duration-300">
         <div className="max-w-6xl mx-auto">
           <Outlet />
         </div>

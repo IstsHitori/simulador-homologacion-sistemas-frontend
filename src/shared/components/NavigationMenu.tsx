@@ -1,7 +1,14 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   GraduationCap,
   Users,
@@ -11,52 +18,45 @@ import {
   X,
   LogOut,
   UserCog,
+  Settings,
+  HelpCircle,
+  CirclePlus,
+  Mail,
 } from "lucide-react";
 import useAuth from "@/domain/auth/hooks/useAuth";
 import { useLogout } from "@/domain/auth/hooks/useLogout";
 
 export function NavigationMenu() {
-  const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isHelpDialogOpen, setIsHelpDialogOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { profile } = useAuth();
   const logout = useLogout();
 
   const menuItems = [
     {
       path: "/app/home",
-      label: "Inicio",
+      label: "Dashboard",
       icon: Home,
-      description: "Panel principal",
-      color: "text-blue-600",
-      bgColor: "bg-blue-50",
       available: true,
     },
     {
       path: "/app/students",
       label: "Estudiantes",
       icon: Users,
-      description: "Gestión de estudiantes",
-      color: "text-primary",
-      bgColor: "bg-primary/10",
       available: true,
     },
     {
       path: "/app/plans",
       label: "Planes",
       icon: BookOpen,
-      description: "Planes de estudio",
-      color: "text-accent",
-      bgColor: "bg-accent/10",
       available: true,
     },
     {
       path: "/app/users",
       label: "Usuarios",
       icon: UserCog,
-      description: "Gestión de usuarios",
-      color: "text-destructive",
-      bgColor: "bg-destructive/10",
       available: profile.role === "admin",
     },
   ];
@@ -75,41 +75,23 @@ export function NavigationMenu() {
       )}
 
       <nav
-        className={`fixed top-0 left-0 h-full bg-background/98 backdrop-blur-sm border-r border-border z-40 transition-all duration-300 ${
+        className={`fixed top-0 left-0 h-full bg-card border-r border-border z-40 transition-all duration-300 w-72 ${
           isMobileMenuOpen
             ? "translate-x-0"
             : "-translate-x-full lg:translate-x-0"
-        } ${isCollapsed ? "w-16" : "w-64"}`}
+        }`}
       >
-        <div className="p-3">
-          <div className="flex items-center justify-between mb-6">
-            {!isCollapsed && (
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 bg-primary/10 rounded-lg">
-                  <GraduationCap className="h-5 w-5 md:h-6 md:w-6 text-primary" />
-                </div>
-                <div>
-                  <h1 className="text-base md:text-lg font-bold text-foreground">
-                    UPC Homologación
-                  </h1>
-                  <p className="text-xs text-muted-foreground hidden sm:block">
-                    Simulador de Homologación
-                  </p>
-                </div>
-              </div>
-            )}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              className="h-8 w-8 p-0 hidden lg:flex"
-            >
-              {isCollapsed ? (
-                <Menu className="h-4 w-4" />
-              ) : (
-                <X className="h-4 w-4" />
-              )}
-            </Button>
+        <div className="flex flex-col h-full">
+          {/* Header */}
+          <div className="p-4 flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+              <GraduationCap className="h-5 w-5 text-primary" />
+            </div>
+            <div className="flex-1">
+              <h1 className="text-sm font-semibold text-foreground">
+                UPC Homologación
+              </h1>
+            </div>
             <Button
               variant="ghost"
               size="sm"
@@ -120,27 +102,19 @@ export function NavigationMenu() {
             </Button>
           </div>
 
-          {!isCollapsed && (
-            <Card className="mb-4 bg-gradient-to-r from-primary/5 to-accent/5">
-              <CardContent className="p-3">
-                <div className="flex items-center gap-2">
-                  <div className="p-1.5 bg-primary/10 rounded-full">
-                    <UserCog className="h-4 w-4 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-foreground">
-                      {profile.fullName}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {profile.role === "admin" ? "Administrador" : "Usuario"}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          {/* Quick Create Button */}
+          <div className="px-4 mb-4">
+            <Button
+              className="w-full justify-start gap-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg"
+              size="default"
+            >
+              <CirclePlus className="h-4 w-4" />
+              Quick Create
+            </Button>
+          </div>
 
-          <div className="space-y-1 mb-6">
+          {/* Main Navigation */}
+          <div className="flex-1 px-4 space-y-1">
             {menuItems
               .filter((item) => item.available)
               .map((item) => {
@@ -153,72 +127,70 @@ export function NavigationMenu() {
                     to={item.path}
                     onClick={handleMobileMenuClose}
                     className={`
-                                            w-full p-2 rounded-lg text-left transition-all duration-200 block
-                                            hover:scale-105 hover:shadow-sm
-                                            ${
-                                              isActive
-                                                ? "bg-primary/10 border border-primary/20"
-                                                : "hover:bg-muted/50"
-                                            }
-                                            ${
-                                              isCollapsed
-                                                ? "flex justify-center"
-                                                : "flex items-center gap-2"
-                                            }
-                                        `}
-                    title={isCollapsed ? item.label : undefined}
+                      flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+                      ${
+                        isActive
+                          ? "bg-muted text-foreground"
+                          : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                      }
+                    `}
                   >
-                    <div
-                      className={`p-1.5 rounded-lg ${
-                        isActive ? item.bgColor : "bg-muted/30"
-                      }`}
-                    >
-                      <Icon
-                        className={`h-4 w-4 ${
-                          isActive ? item.color : "text-muted-foreground"
-                        }`}
-                      />
-                    </div>
-                    {!isCollapsed && (
-                      <div className="flex-1">
-                        <p
-                          className={`text-sm font-medium ${
-                            isActive
-                              ? "text-foreground"
-                              : "text-muted-foreground"
-                          }`}
-                        >
-                          {item.label}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {item.description}
-                        </p>
-                      </div>
-                    )}
+                    <Icon className="h-5 w-5" />
+                    <span>{item.label}</span>
                   </Link>
                 );
               })}
           </div>
 
-          <div className="space-y-2">
-            {!isCollapsed && (
-              <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                Acciones
-              </h3>
-            )}
+          <Separator className="my-2" />
 
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={logout}
-              className={`${
-                isCollapsed ? "w-full p-2 h-10" : "w-full justify-start gap-2"
-              } text-red-600 hover:text-red-700 hover:bg-red-50 bg-transparent`}
-              title={isCollapsed ? "Cerrar Sesión" : undefined}
+          {/* Bottom Actions */}
+          <div className="px-4 pb-4 space-y-1">
+            <button 
+              onClick={() => {
+                navigate("/app/settings");
+                handleMobileMenuClose();
+              }}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors"
             >
-              <LogOut className="h-4 w-4" />
-              {!isCollapsed && "Cerrar Sesión"}
-            </Button>
+              <Settings className="h-5 w-5" />
+              <span>Configuración</span>
+            </button>
+            <button 
+              onClick={() => setIsHelpDialogOpen(true)}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors"
+            >
+              <HelpCircle className="h-5 w-5" />
+              <span>Get Help</span>
+            </button>
+          </div>
+
+          <Separator className="my-2" />
+
+          {/* User Profile */}
+          <div className="p-4">
+            <div className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
+              <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-semibold text-sm">
+                {profile.fullName?.charAt(0).toUpperCase() || "U"}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-foreground truncate">
+                  {profile.fullName}
+                </p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {profile.userName}
+                </p>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={logout}
+                className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
+                title="Cerrar Sesión"
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </nav>
@@ -231,6 +203,40 @@ export function NavigationMenu() {
       >
         <Menu className="h-5 w-5" />
       </Button>
+
+      {/* Help Dialog */}
+      <Dialog open={isHelpDialogOpen} onOpenChange={setIsHelpDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <HelpCircle className="h-5 w-5 text-primary" />
+              ¿Necesitas ayuda?
+            </DialogTitle>
+            <DialogDescription className="text-base pt-4">
+              Si necesitas solicitar ayuda o reportar algún problema, por favor contacta con el desarrollador.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 pt-4">
+            <div className="p-4 bg-muted/50 rounded-lg space-y-2">
+              <p className="text-sm font-medium text-foreground">Contacto del Desarrollador:</p>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Mail className="h-4 w-4" />
+                <span>desarrollador@upc.edu.co</span>
+              </div>
+            </div>
+            
+            <div className="flex justify-end gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setIsHelpDialogOpen(false)}
+              >
+                Cerrar
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

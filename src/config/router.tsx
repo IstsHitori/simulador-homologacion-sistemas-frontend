@@ -6,6 +6,7 @@ import { StudentsPage } from "@/domain/student/pages/StudentsPage";
 import { PlansPage } from "@/domain/plan/pages/PlansPage";
 import { UsersPage } from "@/domain/user/pages/UsersPage";
 import { HomePage } from "@/shared/pages/HomePage";
+import SettingsPage from "@/domain/auth/pages/SettingsPage";
 import { ProtectedRoute } from "@/shared/components/ProtectedRoute";
 
 export const router = createBrowserRouter([
@@ -48,6 +49,10 @@ export const router = createBrowserRouter([
             <UsersPage />
           </ProtectedRoute>
         ),
+      },
+      {
+        path: "settings",
+        element: <SettingsPage />,
       },
     ],
   },
