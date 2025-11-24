@@ -31,7 +31,7 @@ export function HomologationResultDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogContent className="max-w-4xl h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-2xl flex items-center gap-2">
             <CheckCircle2 className="h-6 w-6 text-accent" />
@@ -40,11 +40,11 @@ export function HomologationResultDialog({
           <DialogDescription>{result.message}</DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="flex-1">
-          <div className="space-y-6 pr-4">
+        <ScrollArea className="flex-1 min-h-0">
+          <div className="space-y-6 pr-4 pb-6">
             {/* Materias a Homologar */}
             <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-accent flex items-center gap-2">
+              <h3 className="text-lg font-semibold text-primary flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5" />
                 Materias a Homologar ({result.subjectsToHomologate.length})
               </h3>

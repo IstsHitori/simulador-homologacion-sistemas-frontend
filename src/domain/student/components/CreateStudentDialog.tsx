@@ -24,6 +24,7 @@ import { usePlans } from "@/domain/plan/hooks/usePlanQueries";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Spinner } from "@/components/ui/spinner";
+import { Search } from "lucide-react";
 import type { Student, CreateStudentResponse } from "../types";
 import { toast } from "sonner";
 
@@ -55,6 +56,10 @@ export function CreateStudentDialog({
   onSuccess,
 }: CreateStudentDialogProps) {
   const [selectedSubjects, setSelectedSubjects] = useState<number[]>([]);
+  const [currentStep, setCurrentStep] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterArea, setFilterArea] = useState<string>("all");
+  const [filterSemester, setFilterSemester] = useState<string>("all");
   const isEditing = !!student;
 
   const {
@@ -64,6 +69,7 @@ export function CreateStudentDialog({
     reset,
     setValue,
     watch,
+    trigger,
   } = useForm<StudentFormValues>({
     resolver: zodResolver(studentFormSchema),
     defaultValues: {
@@ -78,6 +84,14 @@ export function CreateStudentDialog({
 
   const selectedGender = watch("gender");
   const selectedSemester = watch("semester");
+
+  // Función para avanzar al paso 2 con validación
+  const handleNextStep = async () => {
+    const isValid = await trigger();
+    if (isValid) {
+      setCurrentStep(2);
+    }
+  };
 
   useEffect(() => {
     if (student) {
@@ -94,8 +108,20 @@ export function CreateStudentDialog({
     } else {
       reset();
       setSelectedSubjects([]);
+      setCurrentStep(1);
     }
   }, [student, setValue, reset]);
+
+  // Función para crear/actualizar estudiante
+  const handleCreateOrUpdate = async () => {
+    // Validar materias antes de crear
+    if (!isEditing && selectedSubjects.length === 0) {
+      toast.error("Debes seleccionar al menos una materia aprobada");
+      return;
+    }
+    // Ejecutar submit del formulario
+    handleSubmit(onSubmit)();
+  };
 
   const handleSubjectToggle = (subjectId: number) => {
     setSelectedSubjects((prev) =>
@@ -106,11 +132,6 @@ export function CreateStudentDialog({
   };
 
   const onSubmit = async (data: StudentFormValues) => {
-    if (!isEditing && selectedSubjects.length === 0) {
-      toast.error("Debes seleccionar al menos una materia aprobada");
-      return;
-    }
-
     const payload = {
       studentData: data,
       approvedSubjects: selectedSubjects.map((id) => ({
@@ -133,6 +154,7 @@ export function CreateStudentDialog({
         onSuccess: (result) => {
           reset();
           setSelectedSubjects([]);
+          setCurrentStep(1);
           if (onSuccess) {
             onSuccess(result);
           }
@@ -143,241 +165,416 @@ export function CreateStudentDialog({
 
   const oldPlanSubjects = plans?.oldPlan?.subjects || [];
 
+  // Filtrar materias
+  const filteredSubjects = oldPlanSubjects.filter((subject) => {
+    const matchesSearch =
+      subject.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      subject.code?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesArea =
+      filterArea === "all" || subject.area.name === filterArea;
+    const matchesSemester =
+      filterSemester === "all" ||
+      subject.semester.toString() === filterSemester;
+    return matchesSearch && matchesArea && matchesSemester;
+  });
+
+  // Obtener áreas únicas
+  const uniqueAreas = Array.from(
+    new Set(oldPlanSubjects.map((s) => s.area.name))
+  );
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogContent
+        className={`max-w-6xl ${
+          currentStep === 2 && "min-w-6xl"
+        }  h-[90vh] overflow-hidden flex flex-col`}
+      >
         <DialogHeader>
           <DialogTitle className="text-2xl">
             {isEditing ? "Editar Estudiante" : "Nuevo Estudiante"}
           </DialogTitle>
           <DialogDescription>
-            {isEditing
-              ? "Actualiza la información del estudiante"
-              : "Completa los datos y selecciona las materias aprobadas"}
+            {currentStep === 1
+              ? "Paso 1 de 2: Completa los datos personales del estudiante"
+              : "Paso 2 de 2: Selecciona las materias aprobadas del plan actual"}
           </DialogDescription>
+          {!isEditing && (
+            <div className="flex items-center gap-2 mt-2">
+              <div
+                className={`flex-1 h-1.5 rounded-full transition-colors ${
+                  currentStep >= 1 ? "bg-primary" : "bg-muted"
+                }`}
+              />
+              <div
+                className={`flex-1 h-1.5 rounded-full transition-colors ${
+                  currentStep >= 2 ? "bg-primary" : "bg-muted"
+                }`}
+              />
+            </div>
+          )}
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex-1 overflow-hidden flex flex-col">
-          <ScrollArea className="flex-1 pr-4">
-            <div className="space-y-6 pb-4">
-              {/* Datos Personales */}
-              <div>
-                <h3 className="text-lg font-semibold mb-4 text-primary">
-                  Datos Personales
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="identification">Identificación *</Label>
-                    <Input
-                      id="identification"
-                      {...register("identification")}
-                      placeholder="1234567890"
-                    />
-                    {errors.identification && (
-                      <p className="text-xs text-destructive mt-1">
-                        {errors.identification.message}
-                      </p>
-                    )}
-                  </div>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex-1 overflow-hidden flex flex-col"
+        >
+          <ScrollArea className="flex-1 pr-4 min-h-0">
+            <div className="space-y-6 pb-6">
+              {/* Paso 1: Datos Personales */}
+              {currentStep === 1 && (
+                <div>
+                  <h3 className="text-lg font-semibold mb-4 text-primary">
+                    Datos Personales
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="identification">Identificación *</Label>
+                      <Input
+                        id="identification"
+                        {...register("identification")}
+                        placeholder="1234567890"
+                      />
+                      {errors.identification && (
+                        <p className="text-xs text-destructive mt-1">
+                          {errors.identification.message}
+                        </p>
+                      )}
+                    </div>
 
-                  <div>
-                    <Label htmlFor="email">Email *</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      {...register("email")}
-                      placeholder="estudiante@example.com"
-                    />
-                    {errors.email && (
-                      <p className="text-xs text-destructive mt-1">
-                        {errors.email.message}
-                      </p>
-                    )}
-                  </div>
+                    <div>
+                      <Label htmlFor="email">Email *</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        {...register("email")}
+                        placeholder="estudiante@example.com"
+                      />
+                      {errors.email && (
+                        <p className="text-xs text-destructive mt-1">
+                          {errors.email.message}
+                        </p>
+                      )}
+                    </div>
 
-                  <div>
-                    <Label htmlFor="names">Nombres *</Label>
-                    <Input
-                      id="names"
-                      {...register("names")}
-                      placeholder="Juan Carlos"
-                    />
-                    {errors.names && (
-                      <p className="text-xs text-destructive mt-1">
-                        {errors.names.message}
-                      </p>
-                    )}
-                  </div>
+                    <div>
+                      <Label htmlFor="names">Nombres *</Label>
+                      <Input
+                        id="names"
+                        {...register("names")}
+                        placeholder="Juan Carlos"
+                      />
+                      {errors.names && (
+                        <p className="text-xs text-destructive mt-1">
+                          {errors.names.message}
+                        </p>
+                      )}
+                    </div>
 
-                  <div>
-                    <Label htmlFor="lastNames">Apellidos *</Label>
-                    <Input
-                      id="lastNames"
-                      {...register("lastNames")}
-                      placeholder="Pérez García"
-                    />
-                    {errors.lastNames && (
-                      <p className="text-xs text-destructive mt-1">
-                        {errors.lastNames.message}
-                      </p>
-                    )}
-                  </div>
+                    <div>
+                      <Label htmlFor="lastNames">Apellidos *</Label>
+                      <Input
+                        id="lastNames"
+                        {...register("lastNames")}
+                        placeholder="Pérez García"
+                      />
+                      {errors.lastNames && (
+                        <p className="text-xs text-destructive mt-1">
+                          {errors.lastNames.message}
+                        </p>
+                      )}
+                    </div>
 
-                  <div>
-                    <Label htmlFor="gender">Género *</Label>
-                    <Select
-                      value={selectedGender}
-                      onValueChange={(value) =>
-                        setValue("gender", value as "Masculino" | "Femenino" | "Otro")
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Masculino">Masculino</SelectItem>
-                        <SelectItem value="Femenino">Femenino</SelectItem>
-                        <SelectItem value="Otro">Otro</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                    <div>
+                      <Label htmlFor="gender">Género *</Label>
+                      <Select
+                        value={selectedGender}
+                        onValueChange={(value) =>
+                          setValue(
+                            "gender",
+                            value as "Masculino" | "Femenino" | "Otro"
+                          )
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Masculino">Masculino</SelectItem>
+                          <SelectItem value="Femenino">Femenino</SelectItem>
+                          <SelectItem value="Otro">Otro</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                  <div>
-                    <Label htmlFor="semester">Semestre *</Label>
-                    <Select
-                      value={selectedSemester?.toString()}
-                      onValueChange={(value) =>
-                        setValue("semester", parseInt(value))
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {[1, 2, 3, 4, 5].map((sem) => (
-                          <SelectItem key={sem} value={sem.toString()}>
-                            Semestre {sem}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                    <div>
+                      <Label htmlFor="semester">Semestre *</Label>
+                      <Select
+                        value={selectedSemester?.toString()}
+                        onValueChange={(value) =>
+                          setValue("semester", parseInt(value))
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {[1, 2, 3, 4, 5].map((sem) => (
+                            <SelectItem key={sem} value={sem.toString()}>
+                              Semestre {sem}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                  <div>
-                    <Label htmlFor="cityResidence">Ciudad *</Label>
-                    <Input
-                      id="cityResidence"
-                      {...register("cityResidence")}
-                      placeholder="Bogotá"
-                    />
-                    {errors.cityResidence && (
-                      <p className="text-xs text-destructive mt-1">
-                        {errors.cityResidence.message}
-                      </p>
-                    )}
-                  </div>
+                    <div>
+                      <Label htmlFor="cityResidence">Ciudad *</Label>
+                      <Input
+                        id="cityResidence"
+                        {...register("cityResidence")}
+                        placeholder="Bogotá"
+                      />
+                      {errors.cityResidence && (
+                        <p className="text-xs text-destructive mt-1">
+                          {errors.cityResidence.message}
+                        </p>
+                      )}
+                    </div>
 
-                  <div>
-                    <Label htmlFor="address">Dirección *</Label>
-                    <Input
-                      id="address"
-                      {...register("address")}
-                      placeholder="Calle 10 #20-30"
-                    />
-                    {errors.address && (
-                      <p className="text-xs text-destructive mt-1">
-                        {errors.address.message}
-                      </p>
-                    )}
-                  </div>
+                    <div>
+                      <Label htmlFor="address">Dirección *</Label>
+                      <Input
+                        id="address"
+                        {...register("address")}
+                        placeholder="Calle 10 #20-30"
+                      />
+                      {errors.address && (
+                        <p className="text-xs text-destructive mt-1">
+                          {errors.address.message}
+                        </p>
+                      )}
+                    </div>
 
-                  <div>
-                    <Label htmlFor="telephone">Teléfono *</Label>
-                    <Input
-                      id="telephone"
-                      {...register("telephone")}
-                      placeholder="3001234567"
-                    />
-                    {errors.telephone && (
-                      <p className="text-xs text-destructive mt-1">
-                        {errors.telephone.message}
-                      </p>
-                    )}
+                    <div>
+                      <Label htmlFor="telephone">Teléfono *</Label>
+                      <Input
+                        id="telephone"
+                        {...register("telephone")}
+                        placeholder="3001234567"
+                      />
+                      {errors.telephone && (
+                        <p className="text-xs text-destructive mt-1">
+                          {errors.telephone.message}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
-              {/* Materias Aprobadas */}
-              <div>
-                <h3 className="text-lg font-semibold mb-4 text-primary">
-                  Materias Aprobadas (Plan Actual)
-                </h3>
-                {plansLoading ? (
-                  <div className="flex items-center justify-center py-8">
-                    <Spinner />
+              {/* Paso 2: Materias Aprobadas */}
+              {currentStep === 2 && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-primary">
+                      Materias Aprobadas (Plan Actual)
+                    </h3>
+                    <span className="text-sm text-muted-foreground">
+                      {selectedSubjects.length} seleccionada(s)
+                    </span>
                   </div>
-                ) : (
-                  <div className="border rounded-lg p-4 space-y-2 max-h-60 overflow-y-auto bg-muted/30">
-                    {oldPlanSubjects.length === 0 ? (
-                      <p className="text-center text-muted-foreground py-4">
-                        No hay materias disponibles
-                      </p>
-                    ) : (
-                      oldPlanSubjects.map((subject) => (
-                        <div
-                          key={subject.id}
-                          className="flex items-center space-x-3 p-3 hover:bg-background rounded-md transition-smooth"
-                        >
-                          <Checkbox
-                            id={`subject-${subject.id}`}
-                            checked={selectedSubjects.includes(subject.id)}
-                            onCheckedChange={() => handleSubjectToggle(subject.id)}
+
+                  {plansLoading ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Spinner />
+                    </div>
+                  ) : (
+                    <>
+                      {/* Filtros */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            placeholder="Buscar materia..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="pl-9 h-9"
                           />
-                          <Label
-                            htmlFor={`subject-${subject.id}`}
-                            className="flex-1 cursor-pointer"
-                          >
-                            <div className="font-medium">{subject.name}</div>
-                            <div className="text-xs text-muted-foreground">
-                              Semestre {subject.semester} • {subject.credits} créditos •{" "}
-                              {subject.area.name}
-                            </div>
-                          </Label>
                         </div>
-                      ))
-                    )}
-                  </div>
-                )}
-                <p className="text-xs text-muted-foreground mt-2">
-                  {selectedSubjects.length} materia(s) seleccionada(s)
-                </p>
-              </div>
+                        <div>
+                          <Select
+                            value={filterArea}
+                            onValueChange={setFilterArea}
+                          >
+                            <SelectTrigger className="h-9">
+                              <SelectValue placeholder="Área" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">
+                                Todas las áreas
+                              </SelectItem>
+                              {uniqueAreas.map((area) => (
+                                <SelectItem key={area} value={area}>
+                                  {area}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Select
+                            value={filterSemester}
+                            onValueChange={setFilterSemester}
+                          >
+                            <SelectTrigger className="h-9">
+                              <SelectValue placeholder="Semestre" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">
+                                Todos los semestres
+                              </SelectItem>
+                              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((sem) => (
+                                <SelectItem key={sem} value={sem.toString()}>
+                                  Semestre {sem}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      {/* Tabla de materias */}
+                      <div className="border rounded-lg overflow-hidden">
+                        <div className="max-h-[450px] overflow-y-auto">
+                          <table className="w-full">
+                            <thead className="bg-muted/50 sticky top-0 z-10">
+                              <tr className="border-b">
+                                <th className="w-12 p-3"></th>
+                                <th className="text-left p-3 font-semibold text-sm">
+                                  Materia
+                                </th>
+                                <th className="text-left p-3 font-semibold text-sm">
+                                  Código
+                                </th>
+                                <th className="text-center p-3 font-semibold text-sm">
+                                  Semestre
+                                </th>
+                                <th className="text-center p-3 font-semibold text-sm">
+                                  Créditos
+                                </th>
+                                <th className="text-left p-3 font-semibold text-sm">
+                                  Área
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {filteredSubjects.length === 0 ? (
+                                <tr>
+                                  <td
+                                    colSpan={6}
+                                    className="text-center py-8 text-muted-foreground text-sm"
+                                  >
+                                    No se encontraron materias
+                                  </td>
+                                </tr>
+                              ) : (
+                                filteredSubjects.map((subject, index) => (
+                                  <tr
+                                    key={subject.id}
+                                    className={`border-b hover:bg-muted/30 transition-colors ${
+                                      index % 2 === 0
+                                        ? "bg-background"
+                                        : "bg-muted/10"
+                                    }`}
+                                  >
+                                    <td className="p-3 text-center">
+                                      <Checkbox
+                                        checked={selectedSubjects.includes(
+                                          subject.id
+                                        )}
+                                        onCheckedChange={() =>
+                                          handleSubjectToggle(subject.id)
+                                        }
+                                      />
+                                    </td>
+                                    <td className="p-3 font-medium text-sm">
+                                      {subject.name}
+                                    </td>
+                                    <td className="p-3 text-sm text-muted-foreground">
+                                      {subject.code || "N/A"}
+                                    </td>
+                                    <td className="p-3 text-center text-sm">
+                                      {subject.semester}
+                                    </td>
+                                    <td className="p-3 text-center text-sm">
+                                      {subject.credits}
+                                    </td>
+                                    <td className="p-3 text-sm text-muted-foreground">
+                                      {subject.area.name}
+                                    </td>
+                                  </tr>
+                                ))
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           </ScrollArea>
 
-          <div className="flex justify-end gap-3 pt-4 border-t">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              disabled={createMutation.isPending || updateMutation.isPending}
-            >
-              {createMutation.isPending || updateMutation.isPending ? (
-                <>
-                  <Spinner className="h-4 w-4 mr-2" />
-                  {isEditing ? "Actualizando..." : "Creando..."}
-                </>
-              ) : isEditing ? (
-                "Actualizar"
-              ) : (
-                "Crear Estudiante"
+          <div className="flex justify-between gap-3 pt-4 border-t">
+            <div>
+              {currentStep === 2 && !isEditing && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setCurrentStep(1)}
+                >
+                  Anterior
+                </Button>
               )}
-            </Button>
+            </div>
+            <div className="flex gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  onOpenChange(false);
+                  setCurrentStep(1);
+                }}
+              >
+                Cancelar
+              </Button>
+              {currentStep === 1 && !isEditing ? (
+                <Button type="button" onClick={handleNextStep}>
+                  Siguiente
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  onClick={handleCreateOrUpdate}
+                  disabled={
+                    createMutation.isPending || updateMutation.isPending
+                  }
+                >
+                  {createMutation.isPending || updateMutation.isPending ? (
+                    <>
+                      <Spinner className="h-4 w-4 mr-2" />
+                      {isEditing ? "Actualizando..." : "Creando..."}
+                    </>
+                  ) : isEditing ? (
+                    "Actualizar"
+                  ) : (
+                    "Crear Estudiante"
+                  )}
+                </Button>
+              )}
+            </div>
           </div>
         </form>
       </DialogContent>
