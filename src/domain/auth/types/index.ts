@@ -6,7 +6,7 @@ export const loginDataSchema = z.object({
 });
 
 export const userProfileSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   fullName: z.string(),
   userName: z.string(),
   role: z.string(),

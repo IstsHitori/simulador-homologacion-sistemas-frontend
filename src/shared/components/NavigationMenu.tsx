@@ -11,7 +11,6 @@ import {
   X,
   LogOut,
   UserCog,
-  Brain,
 } from "lucide-react";
 import useAuth from "@/domain/auth/hooks/useAuth";
 import { useLogout } from "@/domain/auth/hooks/useLogout";
@@ -207,20 +206,6 @@ export function NavigationMenu() {
                 Acciones
               </h3>
             )}
-
-            <Link
-              to="/app/analysis"
-              onClick={handleMobileMenuClose}
-              className={`${
-                isCollapsed
-                  ? "w-full p-2 h-10 flex items-center justify-center"
-                  : "w-full justify-start gap-2 flex items-center"
-              } bg-primary/5 hover:bg-primary/10 border border-input rounded-md px-3 py-2 text-sm`}
-              title={isCollapsed ? "Nuevo Análisis" : undefined}
-            >
-              <Brain className="h-4 w-4" />
-              {!isCollapsed && <span>Nuevo Análisis</span>}
-            </Link>
 
             <Button
               variant="outline"

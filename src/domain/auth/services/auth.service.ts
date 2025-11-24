@@ -14,19 +14,15 @@ export const loginAuth = async (payload: LoginPayload) => {
     );
     return response.data.token as string;
   } catch (error) {
-    
     catchAndValidateError(error);
+    throw error;
   }
 };
 
 export const getUserProfile = async () => {
-  try {
-    return await fetchAndValidate(
-      () => axiosPrivate.get("/auth/profile"),
-      userProfileSchema,
-      "Error en obtener los datos del perfil"
-    );
-  } catch (error) {
-    catchAndValidateError(error);
-  }
+  return await fetchAndValidate(
+    () => axiosPrivate.get("/auth/profile"),
+    userProfileSchema,
+    "Error en obtener los datos del perfil"
+  );
 };

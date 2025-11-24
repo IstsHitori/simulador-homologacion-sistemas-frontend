@@ -22,6 +22,7 @@ axiosPrivate.interceptors.request.use((config) => {
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  
   return config;
 });
 
@@ -29,7 +30,7 @@ axiosPrivate.interceptors.response.use(
   (response) => response,
   (error) => {
     const status = error.response?.status;
-
+    
     if (status === 401) {
       console.warn("Token expirado");
       const logout = useAuthStore.getState().logout;
