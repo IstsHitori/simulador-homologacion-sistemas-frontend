@@ -82,7 +82,7 @@ export function StudentTable({
                       size="sm"
                       variant="ghost"
                       onClick={() => onEdit(student)}
-                      className="hover:bg-accent/10 hover:text-accent transition-smooth"
+                      className="hover:bg-accent/10 hover:text-blue-600 transition-smooth"
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
