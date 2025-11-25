@@ -56,15 +56,15 @@ export default function SettingsPage() {
           </TabsList>
 
           <AnimatePresence mode="wait">
-            <TabsContent value="profile" className="mt-6">
+            <motion.div
+              key={activeTab === "profile" ? "profile-tab" : "password-tab"}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.3 }}
+            >
               {activeTab === "profile" && (
-                <motion.div
-                  key="profile"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ duration: 0.3 }}
-                >
+                <TabsContent value="profile" className="mt-6">
                   <Card>
                     <CardHeader>
                       <CardTitle>Actualizar Perfil</CardTitle>
@@ -77,19 +77,11 @@ export default function SettingsPage() {
                       <UpdateProfileForm />
                     </CardContent>
                   </Card>
-                </motion.div>
+                </TabsContent>
               )}
-            </TabsContent>
 
-            <TabsContent value="password" className="mt-6">
               {activeTab === "password" && (
-                <motion.div
-                  key="password"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ duration: 0.3 }}
-                >
+                <TabsContent value="password" className="mt-6">
                   <Card>
                     <CardHeader>
                       <CardTitle>Cambiar Contraseña</CardTitle>
@@ -102,9 +94,9 @@ export default function SettingsPage() {
                       <UpdatePasswordForm />
                     </CardContent>
                   </Card>
-                </motion.div>
+                </TabsContent>
               )}
-            </TabsContent>
+            </motion.div>
           </AnimatePresence>
         </Tabs>
       </motion.div>
