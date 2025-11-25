@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import useAuth from "../hooks/useAuth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { axiosPrivate } from "@/config/axios";
+import { updateUserProfile } from "../services/auth.service";
 import { toast } from "sonner";
 
 const updateProfileSchema = z.object({
@@ -34,20 +34,17 @@ export function UpdateProfileForm() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async (data: UpdateProfileValues) => {
-      const response = await axiosPrivate.patch(`/user/${profile.id}`, data);
-      return response.data;
-    },
+    mutationFn: updateUserProfile,
     onSuccess: (data) => {
       setProfile({ ...profile, ...data });
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });
       toast.success("Perfil actualizado correctamente");
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error && 'response' in error 
-        ? (error as { response?: { data?: { message?: string } } }).response?.data?.message 
-        : undefined;
-      toast.error(message || "Error al actualizar el perfil");
+      const message = error instanceof Error 
+        ? error.message
+        : "Error al actualizar el perfil";
+      toast.error(message);
     },
   });
 

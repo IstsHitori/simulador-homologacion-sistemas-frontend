@@ -26,3 +26,16 @@ export const getUserProfile = async () => {
     "Error en obtener los datos del perfil"
   );
 };
+
+export const updateUserProfile = async (data: {
+  fullName: string;
+  userName: string;
+}) => {
+  try {
+    const response = await axiosPrivate.patch("/auth/update-profile", data);
+    return response.data;
+  } catch (error) {
+    catchAndValidateError(error);
+    throw error;
+  }
+};
