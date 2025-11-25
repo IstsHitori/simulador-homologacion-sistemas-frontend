@@ -56,6 +56,23 @@ export const createStudentResponseSchema = z.object({
   approvedSubjects: z.array(subjectSchema),
 });
 
+export const studentReportSchema = z.object({
+  id: z.string(),
+  identification: z.string(),
+  email: z.string(),
+  names: z.string(),
+  lastNames: z.string(),
+  semester: z.number(),
+  cityResidence: z.string(),
+  address: z.string(),
+  telephone: z.string(),
+  gender: z.enum(["Masculino", "Femenino", "Otro"]),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  approvedSubjects: z.array(subjectSchema),
+  subjectsToHomologate: z.array(subjectSchema),
+});
+
 export const studentListSchema = z.array(studentSchema);
 
 // Types
@@ -64,6 +81,7 @@ export type Plan = z.infer<typeof planSchema>;
 export type Subject = z.infer<typeof subjectSchema>;
 export type Student = z.infer<typeof studentSchema>;
 export type CreateStudentResponse = z.infer<typeof createStudentResponseSchema>;
+export type StudentReport = z.infer<typeof studentReportSchema>;
 
 // DTOs
 export interface CreateStudentDto {

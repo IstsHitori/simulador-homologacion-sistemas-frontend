@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Edit, Eye, Trash2 } from "lucide-react";
+import { Edit, Eye, Trash2, FileText } from "lucide-react";
 import useAuth from "@/domain/auth/hooks/useAuth";
 import { Badge } from "@/components/ui/badge";
 
@@ -17,6 +17,7 @@ interface StudentTableProps {
   onView: (student: Student) => void;
   onEdit: (student: Student) => void;
   onDelete: (student: Student) => void;
+  onGenerateReport: (student: Student) => void;
 }
 
 export function StudentTable({
@@ -24,6 +25,7 @@ export function StudentTable({
   onView,
   onEdit,
   onDelete,
+  onGenerateReport,
 }: StudentTableProps) {
   const { profile } = useAuth();
   const isAdmin = profile.role === "admin";
@@ -76,6 +78,15 @@ export function StudentTable({
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex gap-2 justify-end">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => onGenerateReport(student)}
+                      className="hover:bg-green-600/10 hover:text-green-600 transition-smooth"
+                      title="Generar Reporte"
+                    >
+                      <FileText className="h-4 w-4" />
+                    </Button>
                     <Button
                       size="sm"
                       variant="ghost"

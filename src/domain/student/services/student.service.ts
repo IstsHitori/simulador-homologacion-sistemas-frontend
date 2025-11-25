@@ -4,6 +4,7 @@ import {
   createStudentResponseSchema,
   studentListSchema,
   studentSchema,
+  studentReportSchema,
   type CreateStudentDto,
   type CreateStudentResponse,
   type Student,
@@ -71,6 +72,44 @@ export const deleteStudent = async (id: string): Promise<string> => {
   try {
     const response = await axiosPrivate.delete(`/student/${id}`);
     return response.data;
+  } catch (error) {
+    catchAndValidateError(error);
+    throw error;
+  }
+};
+
+export const getStudentReport = async (
+  id: string
+): Promise<CreateStudentResponse> => {
+  try {
+    const response = await axiosPrivate.get(`/student/${id}/report`);
+    const reportData = response.data;
+
+    // Validar que tiene la estructura esperada
+    const validated = await studentReportSchema.safeParseAsync(reportData);
+
+    if (!validated.success) {
+      throw new Error("Formato de respuesta inválido");
+    }
+
+    // Transformar a CreateStudentResponse
+    const transformedData: CreateStudentResponse = {
+      message: "Reporte obtenido exitosamente",
+      student: {
+        identification: validated.data.identification,
+        email: validated.data.email,
+        names: validated.data.names,
+        lastNames: validated.data.lastNames,
+        semester: validated.data.semester,
+        cityResidence: validated.data.cityResidence,
+        telephone: validated.data.telephone,
+        gender: validated.data.gender,
+      },
+      subjectsToHomologate: validated.data.subjectsToHomologate,
+      approvedSubjects: validated.data.approvedSubjects,
+    };
+
+    return transformedData;
   } catch (error) {
     catchAndValidateError(error);
     throw error;

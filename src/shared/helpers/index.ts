@@ -16,7 +16,6 @@ export async function fetchAndValidate<T>(
 
 export function catchAndValidateError(error: unknown) {
   if (isAxiosError(error)) {
-    
     const message = error.response?.data?.message;
 
     if (error.response?.status === 400) {

@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Plus, Search, Users } from "lucide-react";
 import { StudentTable } from "../components/StudentTable";
 import { useStudents, useDeleteStudent } from "../hooks/useStudentQueries";
-import { Spinner } from "@/components/ui/spinner";
+import { getStudentReport } from "../services/student.service";
 import { ViewStudentDialog } from "../components/ViewStudentDialog";
 import { HomologationResultDialog } from "../components/HomologationResultDialog";
 import {
@@ -39,7 +39,7 @@ export function StudentsPage() {
     useState<CreateStudentResponse | null>(null);
   const [isHomologationOpen, setIsHomologationOpen] = useState(false);
 
-  const { data: students, isLoading } = useStudents();
+  const { data: students } = useStudents();
   const deleteMutation = useDeleteStudent();
 
   const filteredStudents = students?.filter((student) => {
@@ -81,13 +81,15 @@ export function StudentsPage() {
     setIsHomologationOpen(true);
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Spinner className="h-8 w-8" />
-      </div>
-    );
-  }
+  const handleGenerateReport = async (student: Student) => {
+    try {
+      const reportData = await getStudentReport(student.id);
+      setHomologationResult(reportData);
+      setIsHomologationOpen(true);
+    } catch (error) {
+      console.error("Error al obtener el reporte:", error);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -147,6 +149,7 @@ export function StudentsPage() {
               onView={handleView}
               onEdit={handleEdit}
               onDelete={handleDeleteClick}
+              onGenerateReport={handleGenerateReport}
             />
           </CardContent>
         </Card>

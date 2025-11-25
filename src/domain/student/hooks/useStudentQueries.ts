@@ -5,6 +5,7 @@ import {
   getAllStudents,
   getStudentById,
   updateStudent,
+  getStudentReport,
 } from "../services/student.service";
 import { toast } from "sonner";
 import type { UpdateStudentDto } from "../types";
@@ -67,5 +68,13 @@ export const useDeleteStudent = () => {
     onError: (error: Error) => {
       toast.error(error.message || "Error al eliminar el estudiante");
     },
+  });
+};
+
+export const useStudentReport = (id: string) => {
+  return useQuery({
+    queryKey: ["student-report", id],
+    queryFn: () => getStudentReport(id),
+    enabled: !!id,
   });
 };
