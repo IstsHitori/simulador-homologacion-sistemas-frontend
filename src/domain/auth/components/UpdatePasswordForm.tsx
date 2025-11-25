@@ -9,7 +9,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { useMutation } from "@tanstack/react-query";
 import { axiosPrivate } from "@/config/axios";
 import { toast } from "sonner";
-import { AlertCircle, CheckCircle2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, Eye, EyeOff } from "lucide-react";
 
 // Requisitos de seguridad para la contraseña
 const PASSWORD_REQUIREMENTS = {
@@ -68,6 +68,9 @@ function checkPasswordRequirements(password: string) {
 
 export function UpdatePasswordForm() {
   const [newPasswordValue, setNewPasswordValue] = React.useState("");
+  const [showCurrentPassword, setShowCurrentPassword] = React.useState(false);
+  const [showNewPassword, setShowNewPassword] = React.useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
 
   const {
     register,
@@ -115,14 +118,28 @@ export function UpdatePasswordForm() {
         <Label htmlFor="currentPassword" className="font-semibold">
           Contraseña Actual *
         </Label>
-        <Input
-          id="currentPassword"
-          type="password"
-          {...register("currentPassword")}
-          placeholder="••••••••"
-          disabled={updateMutation.isPending}
-          className="focus:ring-2 focus:ring-primary/50"
-        />
+        <div className="relative">
+          <Input
+            id="currentPassword"
+            type={showCurrentPassword ? "text" : "password"}
+            {...register("currentPassword")}
+            placeholder="••••••••"
+            disabled={updateMutation.isPending}
+            className="pr-10 focus:ring-2 focus:ring-primary/50"
+          />
+          <button
+            type="button"
+            onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+            disabled={updateMutation.isPending}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {showCurrentPassword ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
+          </button>
+        </div>
         {errors.currentPassword && (
           <p className="text-xs text-destructive flex items-center gap-1">
             <AlertCircle className="h-3 w-3" />
@@ -135,16 +152,30 @@ export function UpdatePasswordForm() {
         <Label htmlFor="newPassword" className="font-semibold">
           Nueva Contraseña *
         </Label>
-        <Input
-          id="newPassword"
-          type="password"
-          {...register("newPassword", {
-            onChange: (e) => setNewPasswordValue(e.target.value),
-          })}
-          placeholder="••••••••"
-          disabled={updateMutation.isPending}
-          className="focus:ring-2 focus:ring-primary/50"
-        />
+        <div className="relative">
+          <Input
+            id="newPassword"
+            type={showNewPassword ? "text" : "password"}
+            {...register("newPassword", {
+              onChange: (e) => setNewPasswordValue(e.target.value),
+            })}
+            placeholder="••••••••"
+            disabled={updateMutation.isPending}
+            className="pr-10 focus:ring-2 focus:ring-primary/50"
+          />
+          <button
+            type="button"
+            onClick={() => setShowNewPassword(!showNewPassword)}
+            disabled={updateMutation.isPending}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {showNewPassword ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
+          </button>
+        </div>
         {errors.newPassword && (
           <p className="text-xs text-destructive flex items-center gap-1">
             <AlertCircle className="h-3 w-3" />
@@ -238,14 +269,28 @@ export function UpdatePasswordForm() {
         <Label htmlFor="confirmPassword" className="font-semibold">
           Confirmar Nueva Contraseña *
         </Label>
-        <Input
-          id="confirmPassword"
-          type="password"
-          {...register("confirmPassword")}
-          placeholder="••••••••"
-          disabled={updateMutation.isPending}
-          className="focus:ring-2 focus:ring-primary/50"
-        />
+        <div className="relative">
+          <Input
+            id="confirmPassword"
+            type={showConfirmPassword ? "text" : "password"}
+            {...register("confirmPassword")}
+            placeholder="••••••••"
+            disabled={updateMutation.isPending}
+            className="pr-10 focus:ring-2 focus:ring-primary/50"
+          />
+          <button
+            type="button"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            disabled={updateMutation.isPending}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {showConfirmPassword ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
+          </button>
+        </div>
         {errors.confirmPassword && (
           <p className="text-xs text-destructive flex items-center gap-1">
             <AlertCircle className="h-3 w-3" />

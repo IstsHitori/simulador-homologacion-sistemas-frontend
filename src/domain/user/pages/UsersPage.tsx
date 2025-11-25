@@ -19,15 +19,17 @@ import {
 } from "@/components/ui/alert-dialog";
 import type { User } from "../types";
 import { CreateUserDialog } from "../components/CreateUserDialog";
+import { UpdateUserPasswordDialog } from "../components/UpdateUserPasswordDialog";
 
 export function UsersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
 
-  const { data: users, isLoading } = useUsers();
+  const { data: users, isLoading, refetch } = useUsers();
   const deleteMutation = useDeleteUser();
 
   const filteredUsers = users?.filter((user) => {
@@ -42,6 +44,11 @@ export function UsersPage() {
   const handleEdit = (user: User) => {
     setSelectedUser(user);
     setIsCreateOpen(true);
+  };
+
+  const handleUpdatePassword = (user: User) => {
+    setSelectedUser(user);
+    setIsPasswordDialogOpen(true);
   };
 
   const handleDeleteClick = (user: User) => {
@@ -143,6 +150,7 @@ export function UsersPage() {
                 users={filteredUsers || []}
                 onEdit={handleEdit}
                 onDelete={handleDeleteClick}
+                onUpdatePassword={handleUpdatePassword}
               />
             </motion.div>
           </CardContent>
@@ -153,6 +161,14 @@ export function UsersPage() {
         open={isCreateOpen}
         onOpenChange={setIsCreateOpen}
         user={selectedUser}
+      />
+
+      <UpdateUserPasswordDialog
+        open={isPasswordDialogOpen}
+        onOpenChange={setIsPasswordDialogOpen}
+        userId={selectedUser?.id || ""}
+        userName={selectedUser?.fullName || ""}
+        onSuccess={() => refetch()}
       />
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

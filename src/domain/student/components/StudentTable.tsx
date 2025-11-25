@@ -47,13 +47,19 @@ export function StudentTable({
         <TableBody>
           {students.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+              <TableCell
+                colSpan={7}
+                className="text-center py-8 text-muted-foreground"
+              >
                 No hay estudiantes registrados
               </TableCell>
             </TableRow>
           ) : (
             students.map((student) => (
-              <TableRow key={student.id} className="hover:bg-muted/30 transition-smooth">
+              <TableRow
+                key={student.id}
+                className="hover:bg-muted/30 transition-smooth"
+              >
                 <TableCell className="font-medium">
                   {student.identification}
                 </TableCell>
@@ -82,7 +88,7 @@ export function StudentTable({
                       size="sm"
                       variant="ghost"
                       onClick={() => onEdit(student)}
-                      className="hover:bg-accent/10 hover:text-blue-600 transition-smooth"
+                      className="hover:bg-blue-600/10 hover:text-blue-600 transition-smooth"
                     >
                       <Edit className="h-4 w-4" />
                     </Button>

@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, Lock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import useAuth from "@/domain/auth/hooks/useAuth";
 
@@ -16,9 +16,15 @@ interface UserTableProps {
   users: User[];
   onEdit: (user: User) => void;
   onDelete: (user: User) => void;
+  onUpdatePassword: (user: User) => void;
 }
 
-export function UserTable({ users, onEdit, onDelete }: UserTableProps) {
+export function UserTable({
+  users,
+  onEdit,
+  onDelete,
+  onUpdatePassword,
+}: UserTableProps) {
   const { profile } = useAuth();
 
   return (
@@ -37,18 +43,28 @@ export function UserTable({ users, onEdit, onDelete }: UserTableProps) {
         <TableBody>
           {users.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+              <TableCell
+                colSpan={6}
+                className="text-center py-8 text-muted-foreground"
+              >
                 No hay usuarios registrados
               </TableCell>
             </TableRow>
           ) : (
             users.map((user) => (
-              <TableRow key={user.id} className="hover:bg-muted/30 transition-smooth">
+              <TableRow
+                key={user.id}
+                className="hover:bg-muted/30 transition-smooth"
+              >
                 <TableCell className="font-medium">{user.fullName}</TableCell>
                 <TableCell>{user.userName}</TableCell>
-                <TableCell className="text-muted-foreground">{user.email}</TableCell>
+                <TableCell className="text-muted-foreground">
+                  {user.email}
+                </TableCell>
                 <TableCell className="text-center">
-                  <Badge variant={user.role === "admin" ? "default" : "secondary"}>
+                  <Badge
+                    variant={user.role === "admin" ? "default" : "secondary"}
+                  >
                     {user.role === "admin" ? "Administrador" : "Normal"}
                   </Badge>
                 </TableCell>
@@ -65,9 +81,18 @@ export function UserTable({ users, onEdit, onDelete }: UserTableProps) {
                     <Button
                       size="sm"
                       variant="ghost"
+                      onClick={() => onUpdatePassword(user)}
+                      title="Actualizar contraseña"
+                      className="hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400 transition-smooth"
+                    >
+                      <Lock className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
                       onClick={() => onEdit(user)}
                       disabled={user.id === profile.id.toString()}
-                      className="hover:bg-accent/10 hover:text-accent transition-smooth"
+                      className="hover:bg-yellow-600/10 hover:text-yellow-700 transition-smooth"
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -84,7 +109,7 @@ export function UserTable({ users, onEdit, onDelete }: UserTableProps) {
                 </TableCell>
               </TableRow>
             ))
-          )}
+          )} 
         </TableBody>
       </Table>
     </div>
