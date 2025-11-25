@@ -8,6 +8,7 @@ import { UsersPage } from "@/domain/user/pages/UsersPage";
 import { HomePage } from "@/shared/pages/HomePage";
 import SettingsPage from "@/domain/auth/pages/SettingsPage";
 import { ProtectedRoute } from "@/shared/components/ProtectedRoute";
+import { NotFoundPage } from "@/shared/pages/NotFoundPage";
 
 export const router = createBrowserRouter([
   //Public layout donde esta el login
@@ -55,5 +56,10 @@ export const router = createBrowserRouter([
         element: <SettingsPage />,
       },
     ],
+  },
+  //404 Not Found - debe estar al final
+  {
+    path: "*",
+    element: <NotFoundPage />,
   },
 ]);
