@@ -4,27 +4,34 @@ import type { CreateStudentResponse } from "@/domain/student/types";
 import logo from "@/assets/upc-logo.png";
 
 export const generateHomologationPDF = (result: CreateStudentResponse) => {
-  const doc = new jsPDF();
+  // Create PDF with compression enabled and smaller page size
+  const doc = new jsPDF({
+    orientation: "portrait",
+    unit: "mm",
+    format: "a4",
+    compress: true,
+  });
 
-  // Add logo at the top
+  // Add logo at the top with compression
   try {
-    doc.addImage(logo, "PNG", 15, 10, 25, 25);
+    // Reduce image quality and size
+    doc.addImage(logo, "PNG", 15, 10, 20, 20, "FAST");
   } catch (error) {
     console.error("Error adding logo:", error);
   }
 
   // Header
-  doc.setFontSize(20);
-  doc.setTextColor(0, 0, 0); // Black
-  doc.text("Universidad Popular Del Cesar", 105, 20, { align: "center" });
+  doc.setFontSize(18);
+  doc.setTextColor(0, 0, 0);
+  doc.text("Universidad Popular Del Cesar", 105, 18, { align: "center" });
 
-  doc.setFontSize(16);
-  doc.setTextColor(0, 0, 0); // Black
-  doc.text("Reporte de Homologación", 105, 30, { align: "center" });
+  doc.setFontSize(14);
+  doc.setTextColor(0, 0, 0);
+  doc.text("Reporte de Homologación", 105, 25, { align: "center" });
 
-  // Date
-  doc.setFontSize(10);
-  doc.setTextColor(0, 0, 0); // Black
+  // Date - more compact
+  doc.setFontSize(9);
+  doc.setTextColor(100, 100, 100);
   doc.text(
     `Fecha: ${new Date().toLocaleDateString("es-CO", {
       year: "numeric",
@@ -32,47 +39,57 @@ export const generateHomologationPDF = (result: CreateStudentResponse) => {
       day: "numeric",
     })}`,
     105,
-    38,
+    30,
     { align: "center" }
   );
 
   // Line separator
-  doc.setDrawColor(0, 0, 0);
-  doc.line(20, 42, 190, 42);
+  doc.setDrawColor(100, 100, 100);
+  doc.line(15, 32, 195, 32);
 
-  // Información del Estudiante
-  doc.setFontSize(12);
-  doc.setTextColor(0, 0, 0); // Black
-  doc.text("Información del Estudiante", 20, 50);
+  // Información del Estudiante - Table format for better compression
+  doc.setFontSize(11);
+  doc.setTextColor(0, 0, 0);
+  doc.text("Información del Estudiante", 15, 37);
 
-  doc.setFontSize(10);
-  doc.setTextColor(0, 0, 0); // Black
-
-  const studentInfo = [
-    `Nombre: ${result.student.names} ${result.student.lastNames}`,
-    `Identificación: ${result.student.identification}`,
-    `Email: ${result.student.email}`,
-    `Semestre: ${result.student.semester}`,
-    `Género: ${result.student.gender}`,
-    `Ciudad: ${result.student.cityResidence}`,
-    `Teléfono: ${result.student.telephone}`,
+  const studentTableData = [
+    ["Nombre:", `${result.student.names} ${result.student.lastNames}`],
+    ["Identificación:", result.student.identification],
+    ["Email:", result.student.email],
+    ["Semestre:", result.student.semester.toString()],
+    ["Género:", result.student.gender],
+    ["Ciudad:", result.student.cityResidence],
+    ["Teléfono:", result.student.telephone],
   ];
 
-  let infoY = 58;
-  studentInfo.forEach((info) => {
-    doc.text(info, 25, infoY);
-    infoY += 6;
+  autoTable(doc, {
+    startY: 40,
+    head: [],
+    body: studentTableData,
+    theme: "plain",
+    styles: {
+      fontSize: 9,
+      cellPadding: 2,
+      textColor: [0, 0, 0],
+    },
+    columnStyles: {
+      0: { fontStyle: "bold", cellWidth: 35 },
+      1: { cellWidth: 145 },
+    },
+    margin: { left: 15, right: 15 },
   });
 
-  let yPosition = infoY + 8;
+  let yPosition = (doc as jsPDF & { lastAutoTable?: { finalY: number } })
+    .lastAutoTable?.finalY || 75;
 
   // Materias a Homologar
   if (result.subjectsToHomologate.length > 0) {
-    doc.setFontSize(14);
-    doc.setTextColor(0, 0, 0); // Black
-    doc.text("Materias a Homologar", 20, yPosition);
+    yPosition += 5;
+    doc.setFontSize(11);
+    doc.setTextColor(0, 0, 0);
+    doc.text("Materias a Homologar", 15, yPosition);
 
-    yPosition += 8;
+    yPosition += 4;
 
     const homologateData = result.subjectsToHomologate.map((subject) => [
       subject.name,
@@ -81,13 +98,11 @@ export const generateHomologationPDF = (result: CreateStudentResponse) => {
       subject.credits.toString(),
     ]);
 
-    // Calculate subtotal of credits
     const subtotalCreditsHomologate = result.subjectsToHomologate.reduce(
       (sum, subject) => sum + subject.credits,
       0
     );
 
-    // Add subtotal row
     homologateData.push([
       "SUBTOTAL",
       "",
@@ -97,49 +112,54 @@ export const generateHomologationPDF = (result: CreateStudentResponse) => {
 
     autoTable(doc, {
       startY: yPosition,
-      head: [["Materia", "Área", "Semestre", "Créditos"]],
+      head: [["Materia", "Área", "Sem.", "Créditos"]],
       body: homologateData,
       theme: "grid",
       headStyles: {
         fillColor: [0, 0, 0],
         textColor: [255, 255, 255],
         fontStyle: "bold",
-        fontSize: 10,
+        fontSize: 9,
       },
       bodyStyles: {
         textColor: [0, 0, 0],
-        fontSize: 10,
+        fontSize: 8,
       },
       styles: {
-        cellPadding: 3,
+        cellPadding: 2,
         overflow: "linebreak",
       },
       alternateRowStyles: {
         fillColor: [245, 245, 245],
       },
+      columnStyles: {
+        0: { cellWidth: 80 },
+        1: { cellWidth: 50 },
+        2: { cellWidth: 20 },
+        3: { cellWidth: 20 },
+      },
       didDrawCell: (data) => {
-        // Make subtotal row bold
         if (data.row.index === homologateData.length - 1) {
           data.cell.styles.fontStyle = "bold";
           data.cell.styles.fillColor = [220, 220, 220];
         }
       },
+      margin: { left: 15, right: 15 },
     });
 
-    // Obtener la posición final de la tabla
-    const finalY = (
-      doc as jsPDF & { lastAutoTable?: { finalY: number } }
-    ).lastAutoTable?.finalY;
-    yPosition = finalY ? finalY + 15 : yPosition + 100;
+    yPosition =
+      (doc as jsPDF & { lastAutoTable?: { finalY: number } }).lastAutoTable
+        ?.finalY || yPosition + 50;
   }
 
   // Materias Aprobadas
   if (result.approvedSubjects.length > 0) {
-    doc.setFontSize(14);
-    doc.setTextColor(0, 0, 0); // Black
-    doc.text("Materias Aprobadas", 20, yPosition);
+    yPosition += 5;
+    doc.setFontSize(11);
+    doc.setTextColor(0, 0, 0);
+    doc.text("Materias Aprobadas", 15, yPosition);
 
-    yPosition += 8;
+    yPosition += 4;
 
     const approvedData = result.approvedSubjects.map((subject) => [
       subject.name,
@@ -148,13 +168,11 @@ export const generateHomologationPDF = (result: CreateStudentResponse) => {
       subject.credits.toString(),
     ]);
 
-    // Calculate subtotal of credits
     const subtotalCreditsApproved = result.approvedSubjects.reduce(
       (sum, subject) => sum + subject.credits,
       0
     );
 
-    // Add subtotal row
     approvedData.push([
       "SUBTOTAL",
       "",
@@ -164,50 +182,56 @@ export const generateHomologationPDF = (result: CreateStudentResponse) => {
 
     autoTable(doc, {
       startY: yPosition,
-      head: [["Materia", "Área", "Semestre", "Créditos"]],
+      head: [["Materia", "Área", "Sem.", "Créditos"]],
       body: approvedData,
       theme: "grid",
       headStyles: {
         fillColor: [0, 0, 0],
         textColor: [255, 255, 255],
         fontStyle: "bold",
-        fontSize: 10,
+        fontSize: 9,
       },
       bodyStyles: {
         textColor: [0, 0, 0],
-        fontSize: 10,
+        fontSize: 8,
       },
       styles: {
-        cellPadding: 3,
+        cellPadding: 2,
         overflow: "linebreak",
       },
       alternateRowStyles: {
         fillColor: [245, 245, 245],
       },
+      columnStyles: {
+        0: { cellWidth: 80 },
+        1: { cellWidth: 50 },
+        2: { cellWidth: 20 },
+        3: { cellWidth: 20 },
+      },
       didDrawCell: (data) => {
-        // Make subtotal row bold
         if (data.row.index === approvedData.length - 1) {
           data.cell.styles.fontStyle = "bold";
           data.cell.styles.fillColor = [220, 220, 220];
         }
       },
+      margin: { left: 15, right: 15 },
     });
   }
 
-  // Footer
+  // Footer - optimizado
   const pageCount = doc.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
-    doc.setFontSize(8);
-    doc.setTextColor(0, 0, 0); // Black
+    doc.setFontSize(7);
+    doc.setTextColor(150, 150, 150);
     doc.text(
       `Página ${i} de ${pageCount}`,
       105,
-      doc.internal.pageSize.height - 10,
+      doc.internal.pageSize.height - 7,
       { align: "center" }
     );
   }
 
-  // Save the PDF
+  // Save the PDF with compression
   doc.save(`Homologacion_${new Date().getTime()}.pdf`);
 };
