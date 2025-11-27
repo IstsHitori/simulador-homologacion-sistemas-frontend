@@ -273,6 +273,7 @@ export function CreateStudentDialog({
                         <Label htmlFor="identification">Identificación *</Label>
                         <Input
                           id="identification"
+                          type="number"
                           {...register("identification")}
                           placeholder="1234567890"
                         />
@@ -401,6 +402,7 @@ export function CreateStudentDialog({
                         <Label htmlFor="telephone">Teléfono *</Label>
                         <Input
                           id="telephone"
+                          type="number"
                           {...register("telephone")}
                           placeholder="3001234567"
                         />
