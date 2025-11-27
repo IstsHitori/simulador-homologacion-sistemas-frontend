@@ -37,7 +37,7 @@ const studentFormSchema = z.object({
   email: z.string().email("Email inválido").max(100),
   names: z.string().min(1, "Los nombres son requeridos").max(40),
   lastNames: z.string().min(1, "Los apellidos son requeridos").max(40),
-  semester: z.number().min(1).max(5),
+  semester: z.number().min(1).max(10),
   cityResidence: z.string().min(1, "La ciudad es requerida").max(20),
   address: z.string().min(1, "La dirección es requerida").max(20),
   telephone: z.string().min(1, "El teléfono es requerido").max(10),
@@ -163,7 +163,16 @@ export function CreateStudentDialog({
         });
       }
     },
-    [selectedSubjects, isEditing, student, updateMutation, createMutation, onOpenChange, reset, onSuccess]
+    [
+      selectedSubjects,
+      isEditing,
+      student,
+      updateMutation,
+      createMutation,
+      onOpenChange,
+      reset,
+      onSuccess,
+    ]
   );
 
   const handleCreateOrUpdate = useCallback(async () => {
@@ -351,7 +360,7 @@ export function CreateStudentDialog({
                             <SelectValue placeholder="Selecciona un semestre" />
                           </SelectTrigger>
                           <SelectContent>
-                            {[1, 2, 3, 4, 5].map((sem) => (
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((sem) => (
                               <SelectItem key={sem} value={sem.toString()}>
                                 Semestre {sem}
                               </SelectItem>
