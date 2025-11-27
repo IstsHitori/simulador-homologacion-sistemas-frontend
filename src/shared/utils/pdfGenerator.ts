@@ -218,6 +218,20 @@ export const generateHomologationPDF = (result: CreateStudentResponse) => {
     });
   }
 
+  // Firma del Estudiante - Sección profesional
+  const pageHeight = doc.internal.pageSize.height;
+  const signatureStartY = pageHeight - 45;
+  
+  // Línea horizontal para firma
+  doc.setLineWidth(0.5);
+  doc.setDrawColor(0, 0, 0);
+  doc.line(15, signatureStartY, 70, signatureStartY);
+  
+  // Etiqueta debajo de la línea
+  doc.setFontSize(10);
+  doc.setTextColor(0, 0, 0);
+  doc.text("Firma del Estudiante", 42.5, signatureStartY + 8, { align: "center" });
+
   // Footer - optimizado
   const pageCount = doc.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
