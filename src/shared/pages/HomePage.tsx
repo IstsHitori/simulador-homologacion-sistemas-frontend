@@ -53,7 +53,7 @@ export function HomePage() {
           Bienvenido, {profile.fullName}
         </h1>
         <p className="text-muted-foreground mt-1">
-          Simulador de Homologación de Estudiantes - Universidad Popular Del Cesar
+          Simulador de Homologación del Programa Ingeniería En Sistemas - Universidad Popular Del Cesar
         </p>
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}

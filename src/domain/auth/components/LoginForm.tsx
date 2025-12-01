@@ -28,7 +28,7 @@ export function LoginForm() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold text-primary">
-            Simulador de homologación de estudiantes de sistemas
+            Simulador de homologación del programa Igeniería en Sistemas
           </CardTitle>
           <CardDescription>
             Ingrese sus credenciales para acceder al sistema
