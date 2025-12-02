@@ -342,37 +342,40 @@ export function GenerateReportDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="w-[95vw] sm:w-[90vw] md:max-w-4xl lg:max-w-6xl h-[85vh] sm:h-[90vh] overflow-hidden flex flex-col p-4 sm:p-6">
-        <DialogHeader>
-          <DialogTitle className="text-lg sm:text-xl md:text-2xl">
-            Generar Reporte de Homologación
-          </DialogTitle>
-          <DialogDescription className="text-xs sm:text-sm">
-            {currentStep === 1
-              ? "Paso 1 de 2: Completa tus datos personales"
-              : "Paso 2 de 2: Selecciona las materias que aprobaste en tu plan anterior"}
-          </DialogDescription>
-          <div className="flex items-center gap-2 mt-2">
-            <div
-              className={`flex-1 h-1.5 rounded-full transition-colors ${
-                currentStep >= 1 ? "bg-primary" : "bg-muted"
-              }`}
-            />
-            <div
-              className={`flex-1 h-1.5 rounded-full transition-colors ${
-                currentStep >= 2 ? "bg-primary" : "bg-muted"
-              }`}
-            />
-          </div>
-        </DialogHeader>
+      <DialogContent className="w-[95vw] sm:w-[90vw] md:max-w-4xl lg:max-w-6xl max-h-[90vh] overflow-hidden flex flex-col p-0">
+        {/* Header fijo */}
+        <div className="px-4 sm:px-6 pt-4 sm:pt-6 pb-3 border-b shrink-0">
+          <DialogHeader>
+            <DialogTitle className="text-lg sm:text-xl md:text-2xl">
+              Generar Reporte de Homologación
+            </DialogTitle>
+            <DialogDescription className="text-xs sm:text-sm mt-1">
+              {currentStep === 1
+                ? "Paso 1 de 2: Completa tus datos personales"
+                : "Paso 2 de 2: Selecciona las materias que aprobaste en tu plan anterior"}
+            </DialogDescription>
+            <div className="flex items-center gap-2 mt-3">
+              <div
+                className={`flex-1 h-1.5 rounded-full transition-colors ${
+                  currentStep >= 1 ? "bg-primary" : "bg-muted"
+                }`}
+              />
+              <div
+                className={`flex-1 h-1.5 rounded-full transition-colors ${
+                  currentStep >= 2 ? "bg-primary" : "bg-muted"
+                }`}
+              />
+            </div>
+          </DialogHeader>
+        </div>
 
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="flex-1 overflow-hidden flex flex-col"
+          className="flex-1 overflow-hidden flex flex-col min-h-0"
         >
           {currentStep === 1 && (
-            <ScrollArea className="flex-1 px-1">
-              <div className="space-y-3 sm:space-y-4 pr-2 sm:pr-4 pb-4">
+            <ScrollArea className="flex-1 overflow-y-auto">
+              <div className="space-y-3 sm:space-y-4 px-4 sm:px-6 py-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div className="space-y-1.5 sm:space-y-2">
                     <Label
@@ -632,21 +635,22 @@ export function GenerateReportDialog({
             </div>
           )}
 
-          <div className="flex justify-between gap-2 pt-3 sm:pt-4 border-t shrink-0">
+          {/* Footer fijo con botones */}
+          <div className="flex justify-between gap-2 px-4 sm:px-6 py-3 sm:py-4 border-t shrink-0 bg-background">
             {currentStep === 1 ? (
               <>
                 <Button
                   type="button"
                   variant="outline"
                   onClick={handleClose}
-                  className="text-sm h-9 sm:h-10"
+                  className="text-sm h-10 sm:h-11 flex-1 sm:flex-none"
                 >
                   Cancelar
                 </Button>
                 <Button
                   type="button"
                   onClick={handleNextStep}
-                  className="text-sm h-9 sm:h-10"
+                  className="text-sm h-10 sm:h-11 flex-1 sm:flex-none"
                 >
                   Siguiente
                 </Button>
@@ -657,7 +661,7 @@ export function GenerateReportDialog({
                   type="button"
                   variant="outline"
                   onClick={() => setCurrentStep(1)}
-                  className="text-sm h-9 sm:h-10"
+                  className="text-sm h-10 sm:h-11 flex-1 sm:flex-none"
                 >
                   Atrás
                 </Button>
@@ -665,7 +669,7 @@ export function GenerateReportDialog({
                   type="button"
                   onClick={handleGenerateReport}
                   disabled={generateMutation.isPending}
-                  className="text-sm h-9 sm:h-10"
+                  className="text-sm h-10 sm:h-11 flex-1 sm:flex-none"
                 >
                   {generateMutation.isPending ? (
                     <>
