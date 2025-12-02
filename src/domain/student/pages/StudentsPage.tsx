@@ -92,19 +92,19 @@ export function StudentsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+        className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4"
       >
         <div>
-          <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
-            <Users className="h-8 w-8 text-primary" />
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground flex items-center gap-2">
+            <Users className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-primary" />
             Gestión de Estudiantes
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-xs sm:text-sm md:text-base text-muted-foreground mt-1">
             Administra y simula homologaciones de estudiantes
           </p>
         </div>
@@ -113,10 +113,10 @@ export function StudentsPage() {
             setSelectedStudent(null);
             setIsCreateOpen(true);
           }}
-          className="gap-2 shadow-sm hover:shadow-md transition-smooth"
+          className="gap-2 shadow-sm hover:shadow-md transition-smooth w-full sm:w-auto text-sm sm:text-base"
         >
           <Plus className="h-4 w-4" />
-          Nuevo Estudiante
+          <span className="sm:inline">Nuevo Estudiante</span>
         </Button>
       </motion.div>
 
@@ -126,21 +126,21 @@ export function StudentsPage() {
         transition={{ duration: 0.3 }}
       >
         <Card className="shadow-sm hover:shadow-md transition-smooth">
-          <CardHeader>
-            <CardTitle className="text-xl">Estudiantes Registrados</CardTitle>
-            <CardDescription>
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="text-lg sm:text-xl md:text-2xl">Estudiantes Registrados</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">
               {students?.length || 0} estudiante
               {students?.length !== 1 ? "s" : ""} en total
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 p-4 sm:p-6">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Buscar por identificación, nombre o email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="pl-10 text-sm sm:text-base"
               />
             </div>
 

@@ -197,24 +197,24 @@ export function GenerateReportDialog({
 
           <div className="space-y-6 py-4">
             {/* Información del Estudiante */}
-            <div className="bg-muted/50 rounded-lg p-4 space-y-2">
-              <h3 className="font-semibold text-lg">Información del Estudiante</h3>
-              <div className="grid grid-cols-2 gap-3 text-sm">
+            <div className="bg-muted/50 rounded-lg p-3 sm:p-4 space-y-2">
+              <h3 className="font-semibold text-base sm:text-lg">Información del Estudiante</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm">
                 <div>
                   <span className="text-muted-foreground">Identificación:</span>
-                  <p className="font-medium">{reportResult.student.identification}</p>
+                  <p className="font-medium wrap-break-word">{reportResult.student.identification}</p>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Email:</span>
-                  <p className="font-medium">{reportResult.student.email}</p>
+                  <p className="font-medium wrap-break-word">{reportResult.student.email}</p>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Nombres:</span>
-                  <p className="font-medium">{reportResult.student.names}</p>
+                  <p className="font-medium wrap-break-word">{reportResult.student.names}</p>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Apellidos:</span>
-                  <p className="font-medium">{reportResult.student.lastNames}</p>
+                  <p className="font-medium wrap-break-word">{reportResult.student.lastNames}</p>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Semestre:</span>
@@ -222,22 +222,22 @@ export function GenerateReportDialog({
                 </div>
                 <div>
                   <span className="text-muted-foreground">Ciudad:</span>
-                  <p className="font-medium">{reportResult.student.cityResidence}</p>
+                  <p className="font-medium wrap-break-word">{reportResult.student.cityResidence}</p>
                 </div>
               </div>
             </div>
 
             {/* Materias a Homologar */}
             <div>
-              <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
-                <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-sm">
+              <h3 className="font-semibold text-base sm:text-lg mb-2 sm:mb-3 flex items-center gap-2">
+                <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs sm:text-sm">
                   {reportResult.subjectsToHomologate.length}
                 </span>
-                Materias a Homologar
+                <span className="text-sm sm:text-base">Materias a Homologar</span>
               </h3>
-              <ScrollArea className="h-[200px] border rounded-lg p-4">
+              <ScrollArea className="h-[200px] border rounded-lg p-3 sm:p-4">
                 {reportResult.subjectsToHomologate.length === 0 ? (
-                  <p className="text-muted-foreground text-center py-8">
+                  <p className="text-xs sm:text-sm text-muted-foreground text-center py-8">
                     No hay materias para homologar
                   </p>
                 ) : (
@@ -245,9 +245,9 @@ export function GenerateReportDialog({
                     {reportResult.subjectsToHomologate.map((subject) => (
                       <div
                         key={subject.id}
-                        className="p-3 bg-green-50 border border-green-200 rounded-lg"
+                        className="p-2 sm:p-3 bg-green-50 border border-green-200 rounded-lg"
                       >
-                        <p className="font-medium">{subject.name}</p>
+                        <p className="font-medium text-xs sm:text-sm wrap-break-word">{subject.name}</p>
                         <p className="text-sm text-muted-foreground">
                           Semestre {subject.semester} - {subject.credits} créditos
                         </p>
@@ -487,7 +487,7 @@ export function GenerateReportDialog({
 
           {currentStep === 2 && (
             <div className="flex-1 overflow-hidden flex flex-col gap-4 min-h-0">
-              <div className="space-y-4 flex-shrink-0">
+              <div className="space-y-4 shrink-0">
                 <div className="flex flex-col sm:flex-row gap-3">
                   <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

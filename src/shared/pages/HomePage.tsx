@@ -37,22 +37,22 @@ export function HomePage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground flex items-center gap-2">
           <motion.div
             animate={{ rotate: [0, 360] }}
             transition={{ duration: 2, repeat: Infinity, repeatDelay: 5, ease: "easeInOut" }}
           >
-            <GraduationCap className="h-8 w-8 text-primary" />
+            <GraduationCap className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-primary" />
           </motion.div>
-          Bienvenido, {profile.fullName}
+          <span className="truncate">Bienvenido, {profile.fullName}</span>
         </h1>
-        <p className="text-muted-foreground mt-1">
+        <p className="text-xs sm:text-sm md:text-base text-muted-foreground mt-1">
           Simulador de Homologación del Programa Ingeniería En Sistemas - Universidad Popular Del Cesar
         </p>
         <motion.div
@@ -60,13 +60,13 @@ export function HomePage() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3, duration: 0.3 }}
         >
-          <Badge variant={profile.role === "admin" ? "default" : "secondary"} className="mt-2">
+          <Badge variant={profile.role === "admin" ? "default" : "secondary"} className="mt-2 text-xs sm:text-sm">
             {profile.role === "admin" ? "Administrador" : "Usuario Normal"}
           </Badge>
         </motion.div>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {stats
           .filter((stat) => !stat.adminOnly || profile.role === "admin")
           .map((stat, index) => {
@@ -83,21 +83,21 @@ export function HomePage() {
                   className="shadow-sm hover:shadow-lg transition-all border-l-4 h-full"
                   style={{ borderLeftColor: stat.color }}
                 >
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-4 sm:p-6">
+                    <CardTitle className="text-xs sm:text-sm font-medium">
                       {stat.title}
                     </CardTitle>
                     <motion.div 
-                      className={`p-2 rounded-lg ${stat.bgColor}`}
+                      className={`p-1.5 sm:p-2 rounded-lg ${stat.bgColor}`}
                       whileHover={{ scale: 1.1, rotate: 5 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <Icon className={`h-5 w-5 ${stat.color}`} />
+                      <Icon className={`h-4 w-4 sm:h-5 sm:w-5 ${stat.color}`} />
                     </motion.div>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="p-4 sm:p-6">
                     <motion.div 
-                      className="text-3xl font-bold"
+                      className="text-2xl sm:text-3xl font-bold"
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ delay: index * 0.1 + 0.4, type: "spring", stiffness: 200 }}
@@ -117,19 +117,19 @@ export function HomePage() {
         transition={{ delay: 0.6, duration: 0.5 }}
       >
         <Card className="shadow-sm hover:shadow-md transition-all">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-primary" />
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg md:text-xl">
+              <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
               Información del Sistema
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-xs sm:text-sm">
               Panel de control del simulador de homologación
             </CardDescription>
           </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 p-4 sm:p-6">
           <div className="space-y-2">
-            <h3 className="font-semibold text-foreground">Funcionalidades Disponibles:</h3>
-            <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+            <h3 className="font-semibold text-foreground text-sm sm:text-base">Funcionalidades Disponibles:</h3>
+            <ul className="list-disc list-inside space-y-1 text-muted-foreground text-xs sm:text-sm">
               <li>Registro y gestión de estudiantes</li>
               <li>Simulación de homologación de materias</li>
               <li>Consulta de planes de estudio (Actual y Propuesto)</li>
@@ -143,8 +143,8 @@ export function HomePage() {
           </div>
 
           <div className="space-y-2">
-            <h3 className="font-semibold text-foreground">Tu Rol:</h3>
-            <div className="p-4 rounded-lg bg-muted/50">
+            <h3 className="font-semibold text-foreground text-sm sm:text-base">Tu Rol:</h3>
+            <div className="p-3 sm:p-4 rounded-lg bg-muted/50">
               {profile.role === "admin" ? (
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-primary">Administrador del Sistema</p>

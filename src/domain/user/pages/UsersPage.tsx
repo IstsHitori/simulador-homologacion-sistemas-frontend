@@ -73,23 +73,23 @@ export function UsersPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+        className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4"
       >
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.4, delay: 0.1 }}
         >
-          <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
-            <UsersIcon className="h-8 w-8 text-primary" />
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground flex items-center gap-2">
+            <UsersIcon className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-primary" />
             Gestión de Usuarios
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-xs sm:text-sm md:text-base text-muted-foreground mt-1">
             Administra los usuarios del sistema
           </p>
         </motion.div>
@@ -105,10 +105,10 @@ export function UsersPage() {
               setSelectedUser(null);
               setIsCreateOpen(true);
             }}
-            className="gap-2 shadow-sm hover:shadow-md transition-smooth"
+            className="gap-2 shadow-sm hover:shadow-md transition-smooth w-full sm:w-auto text-sm sm:text-base"
           >
             <Plus className="h-4 w-4" />
-            Nuevo Usuario
+            <span className="sm:inline">Nuevo Usuario</span>
           </Button>
         </motion.div>
       </motion.div>
@@ -119,13 +119,13 @@ export function UsersPage() {
         transition={{ duration: 0.5, delay: 0.3 }}
       >
         <Card className="shadow-sm hover:shadow-md transition-smooth">
-          <CardHeader>
-            <CardTitle className="text-xl">Usuarios del Sistema</CardTitle>
-            <CardDescription>
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="text-lg sm:text-xl md:text-2xl">Usuarios del Sistema</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">
               {users?.length || 0} usuario{users?.length !== 1 ? "s" : ""} registrado{users?.length !== 1 ? "s" : ""}
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 p-4 sm:p-6">
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -137,7 +137,7 @@ export function UsersPage() {
                 placeholder="Buscar por nombre, usuario o email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="pl-10 text-sm sm:text-base"
               />
             </motion.div>
 

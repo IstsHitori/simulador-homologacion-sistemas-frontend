@@ -75,7 +75,7 @@ export function NavigationMenu() {
       )}
 
       <nav
-        className={`fixed top-0 left-0 h-full bg-card border-r border-border z-40 transition-all duration-300 w-72 ${
+        className={`fixed top-0 left-0 h-full bg-card border-r border-border z-40 transition-all duration-300 w-64 sm:w-72 ${
           isMobileMenuOpen
             ? "translate-x-0"
             : "-translate-x-full lg:translate-x-0"
@@ -83,12 +83,12 @@ export function NavigationMenu() {
       >
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="p-4 flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-              <GraduationCap className="h-5 w-5 text-primary" />
+          <div className="p-3 sm:p-4 flex items-center gap-2 sm:gap-3">
+            <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-primary/10 flex items-center justify-center">
+              <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             </div>
-            <div className="flex-1">
-              <h1 className="text-sm font-semibold text-foreground">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-xs sm:text-sm font-semibold text-foreground truncate">
                 UPC Homologación
               </h1>
             </div>
@@ -96,14 +96,14 @@ export function NavigationMenu() {
               variant="ghost"
               size="sm"
               onClick={handleMobileMenuClose}
-              className="h-8 w-8 p-0 lg:hidden"
+              className="h-8 w-8 p-0 lg:hidden shrink-0"
             >
               <X className="h-4 w-4" />
             </Button>
           </div>
 
           {/* Main Navigation */}
-          <div className="flex-1 px-4 space-y-1">
+          <div className="flex-1 px-3 sm:px-4 space-y-1">
             {menuItems
               .filter((item) => item.available)
               .map((item, index) => {
@@ -126,7 +126,7 @@ export function NavigationMenu() {
                         whileHover={{ scale: 1.02, x: 4 }}
                         whileTap={{ scale: 0.98 }}
                         className={`
-                          flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+                          flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors
                           ${
                             isActive
                               ? "bg-muted text-foreground"
@@ -134,8 +134,8 @@ export function NavigationMenu() {
                           }
                         `}
                       >
-                        <Icon className="h-5 w-5" />
-                        <span>{item.label}</span>
+                        <Icon className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
+                        <span className="truncate">{item.label}</span>
                       </motion.div>
                     </Link>
                   </motion.div>
@@ -146,39 +146,39 @@ export function NavigationMenu() {
           <Separator className="my-2" />
 
           {/* Bottom Actions */}
-          <div className="px-4 pb-4 space-y-1">
+          <div className="px-3 sm:px-4 pb-4 space-y-1">
             <button
               onClick={() => {
                 navigate("/app/settings");
                 handleMobileMenuClose();
               }}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors"
+              className="w-full flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors"
             >
-              <Settings className="h-5 w-5" />
-              <span>Configuración</span>
+              <Settings className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
+              <span className="truncate">Configuración</span>
             </button>
             <button
               onClick={() => setIsHelpDialogOpen(true)}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors"
+              className="w-full flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors"
             >
-              <HelpCircle className="h-5 w-5" />
-              <span>Ayuda</span>
+              <HelpCircle className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
+              <span className="truncate">Ayuda</span>
             </button>
           </div>
 
           <Separator className="my-2" />
 
           {/* User Profile */}
-          <div className="p-4">
-            <div className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
-              <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-semibold text-sm">
+          <div className="p-3 sm:p-4">
+            <div className="flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
+              <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-primary/20 flex items-center justify-center text-primary font-semibold text-xs sm:text-sm shrink-0">
                 {profile.fullName?.charAt(0).toUpperCase() || "U"}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground truncate">
+                <p className="text-xs sm:text-sm font-medium text-foreground truncate">
                   {profile.fullName}
                 </p>
-                <p className="text-xs text-muted-foreground truncate">
+                <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
                   {profile.userName}
                 </p>
               </div>
@@ -186,10 +186,10 @@ export function NavigationMenu() {
                 variant="ghost"
                 size="sm"
                 onClick={logout}
-                className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
+                className="h-7 w-7 sm:h-8 sm:w-8 p-0 hover:bg-destructive/10 hover:text-destructive shrink-0"
                 title="Cerrar Sesión"
               >
-                <LogOut className="h-4 w-4" />
+                <LogOut className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
             </div>
           </div>
