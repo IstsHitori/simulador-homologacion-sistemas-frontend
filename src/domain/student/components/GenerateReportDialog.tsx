@@ -532,49 +532,48 @@ export function GenerateReportDialog({
           )}
 
           {currentStep === 2 && (
-            <div className="flex-1 overflow-hidden flex flex-col gap-3 sm:gap-4 min-h-0">
-              <div className="space-y-3 sm:space-y-4 shrink-0">
-                <div className="flex flex-col gap-2 sm:gap-3">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Buscar materia..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-9 text-sm h-9"
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    <Select value={filterArea} onValueChange={setFilterArea}>
-                      <SelectTrigger className="flex-1 text-sm h-9">
-                        <SelectValue placeholder="Área" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Todas las áreas</SelectItem>
-                        {uniqueAreas.map((area) => (
-                          <SelectItem key={area} value={area}>
-                            {area}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Select
-                      value={filterSemester}
-                      onValueChange={setFilterSemester}
-                    >
-                      <SelectTrigger className="flex-1 text-sm h-9">
-                        <SelectValue placeholder="Semestre" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Todos</SelectItem>
-                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((sem) => (
-                          <SelectItem key={sem} value={sem.toString()}>
-                            Semestre {sem}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+            <div className="flex-1 overflow-hidden flex flex-col min-h-0">
+              {/* Filtros fijos */}
+              <div className="px-4 sm:px-6 py-4 space-y-2 sm:space-y-3 shrink-0">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Buscar materia..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-9 text-sm h-9"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Select value={filterArea} onValueChange={setFilterArea}>
+                    <SelectTrigger className="flex-1 text-sm h-9">
+                      <SelectValue placeholder="Área" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todas las áreas</SelectItem>
+                      {uniqueAreas.map((area) => (
+                        <SelectItem key={area} value={area}>
+                          {area}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select
+                    value={filterSemester}
+                    onValueChange={setFilterSemester}
+                  >
+                    <SelectTrigger className="flex-1 text-sm h-9">
+                      <SelectValue placeholder="Semestre" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todos</SelectItem>
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((sem) => (
+                        <SelectItem key={sem} value={sem.toString()}>
+                          Semestre {sem}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="flex items-center justify-between text-xs sm:text-sm">
@@ -585,52 +584,51 @@ export function GenerateReportDialog({
                 </div>
               </div>
 
+              {/* Lista de materias con scroll */}
               {plansLoading ? (
-                <div className="flex-1 flex items-center justify-center min-h-0">
+                <div className="flex-1 flex items-center justify-center">
                   <Spinner />
                 </div>
               ) : (
-                <div className="flex-1 min-h-0 border rounded-lg overflow-hidden">
-                  <ScrollArea className="h-full">
-                    <div className="p-4 space-y-2">
-                      {filteredSubjects.length === 0 ? (
-                        <p className="text-center text-muted-foreground py-8">
-                          No se encontraron materias
-                        </p>
-                      ) : (
-                        filteredSubjects.map((subject) => (
-                          <label
-                            key={subject.id}
-                            className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors active:bg-accent"
-                          >
-                            <Checkbox
-                              checked={selectedSubjects.includes(subject.id)}
-                              onCheckedChange={() =>
-                                handleSubjectToggle(subject.id)
-                              }
-                              className="mt-0.5 sm:mt-1 shrink-0"
-                            />
-                            <div className="flex-1 min-w-0">
-                              <p className="font-medium text-sm sm:text-base leading-tight">
-                                {subject.name}
-                              </p>
-                              <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-                                {subject.code && subject.code !== "N/A"
-                                  ? `${subject.code} - `
-                                  : ""}
-                                Sem. {subject.semester} - {subject.credits}{" "}
-                                créd.
-                              </p>
-                              <p className="text-xs text-muted-foreground mt-0.5">
-                                {subject.area.name}
-                              </p>
-                            </div>
-                          </label>
-                        ))
-                      )}
-                    </div>
-                  </ScrollArea>
-                </div>
+                <ScrollArea className="flex-1 overflow-y-auto">
+                  <div className="px-4 sm:px-6 pb-4 space-y-2">
+                    {filteredSubjects.length === 0 ? (
+                      <p className="text-center text-muted-foreground py-8">
+                        No se encontraron materias
+                      </p>
+                    ) : (
+                      filteredSubjects.map((subject) => (
+                        <label
+                          key={subject.id}
+                          className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors active:bg-accent block"
+                        >
+                          <Checkbox
+                            checked={selectedSubjects.includes(subject.id)}
+                            onCheckedChange={() =>
+                              handleSubjectToggle(subject.id)
+                            }
+                            className="mt-0.5 sm:mt-1 shrink-0"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-sm sm:text-base leading-tight">
+                              {subject.name}
+                            </p>
+                            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+                              {subject.code && subject.code !== "N/A"
+                                ? `${subject.code} - `
+                                : ""}
+                              Sem. {subject.semester} - {subject.credits}{" "}
+                              créd.
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              {subject.area.name}
+                            </p>
+                          </div>
+                        </label>
+                      ))
+                    )}
+                  </div>
+                </ScrollArea>
               )}
             </div>
           )}
