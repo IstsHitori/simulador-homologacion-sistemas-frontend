@@ -122,7 +122,7 @@ export const generatePublicReport = async (
   data: CreateStudentDto
 ): Promise<GenerateReportResponse> => {
   try {
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api/v1";
+    const API_URL = import.meta.env.VITE_API_BACKEND;
     const response = await axios.post(`${API_URL}/student/report`, data);
     
     return await fetchAndValidate(
