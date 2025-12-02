@@ -102,11 +102,10 @@ export const getStudentReport = async (
         lastNames: validated.data.lastNames,
         semester: validated.data.semester,
         cityResidence: validated.data.cityResidence,
-        telephone: validated.data.telephone,
         gender: validated.data.gender,
       },
       subjectsToHomologate: validated.data.subjectsToHomologate,
-      approvedSubjects: validated.data.approvedSubjects,
+      subjectsToView: validated.data.subjectsToView,
     };
 
     return transformedData;
