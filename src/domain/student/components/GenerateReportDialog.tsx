@@ -372,16 +372,20 @@ export function GenerateReportDialog({
         >
           {currentStep === 1 && (
             <ScrollArea className="flex-1 px-1">
-              <div className="space-y-3 sm:space-y-4 pr-2 sm:pr-4">
+              <div className="space-y-3 sm:space-y-4 pr-2 sm:pr-4 pb-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="identification">
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <Label
+                      htmlFor="identification"
+                      className="text-sm sm:text-base"
+                    >
                       Identificación <span className="text-destructive">*</span>
                     </Label>
                     <Input
                       id="identification"
                       {...register("identification")}
                       placeholder="Ej: 1234567890"
+                      className="h-10 sm:h-11 text-sm sm:text-base"
                     />
                     {errors.identification && (
                       <p className="text-sm text-destructive">
@@ -390,8 +394,8 @@ export function GenerateReportDialog({
                     )}
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="email">
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <Label htmlFor="email" className="text-sm sm:text-base">
                       Email <span className="text-destructive">*</span>
                     </Label>
                     <Input
@@ -399,6 +403,7 @@ export function GenerateReportDialog({
                       type="email"
                       {...register("email")}
                       placeholder="ejemplo@correo.com"
+                      className="h-10 sm:h-11 text-sm sm:text-base"
                     />
                     {errors.email && (
                       <p className="text-sm text-destructive">
@@ -407,14 +412,15 @@ export function GenerateReportDialog({
                     )}
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="names">
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <Label htmlFor="names" className="text-sm sm:text-base">
                       Nombres <span className="text-destructive">*</span>
                     </Label>
                     <Input
                       id="names"
                       {...register("names")}
                       placeholder="Nombres completos"
+                      className="h-10 sm:h-11 text-sm sm:text-base"
                     />
                     {errors.names && (
                       <p className="text-sm text-destructive">
@@ -423,14 +429,15 @@ export function GenerateReportDialog({
                     )}
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="lastNames">
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <Label htmlFor="lastNames" className="text-sm sm:text-base">
                       Apellidos <span className="text-destructive">*</span>
                     </Label>
                     <Input
                       id="lastNames"
                       {...register("lastNames")}
                       placeholder="Apellidos completos"
+                      className="h-10 sm:h-11 text-sm sm:text-base"
                     />
                     {errors.lastNames && (
                       <p className="text-sm text-destructive">
@@ -439,8 +446,8 @@ export function GenerateReportDialog({
                     )}
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="semester">
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <Label htmlFor="semester" className="text-sm sm:text-base">
                       Semestre <span className="text-destructive">*</span>
                     </Label>
                     <Select
@@ -449,8 +456,8 @@ export function GenerateReportDialog({
                         setValue("semester", parseInt(value))
                       }
                     >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecciona el semestre" />
+                      <SelectTrigger className="h-10 sm:h-11 text-sm sm:text-base">
+                        <SelectValue placeholder="Semestre" />
                       </SelectTrigger>
                       <SelectContent>
                         {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((sem) => (
@@ -467,8 +474,11 @@ export function GenerateReportDialog({
                     )}
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="cityResidence">
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <Label
+                      htmlFor="cityResidence"
+                      className="text-sm sm:text-base"
+                    >
                       Ciudad de Residencia{" "}
                       <span className="text-destructive">*</span>
                     </Label>
@@ -476,6 +486,7 @@ export function GenerateReportDialog({
                       id="cityResidence"
                       {...register("cityResidence")}
                       placeholder="Ej: Valledupar"
+                      className="h-10 sm:h-11 text-sm sm:text-base"
                     />
                     {errors.cityResidence && (
                       <p className="text-sm text-destructive">
@@ -484,8 +495,8 @@ export function GenerateReportDialog({
                     )}
                   </div>
 
-                  <div className="space-y-2 col-span-2">
-                    <Label htmlFor="gender">
+                  <div className="space-y-1.5 sm:space-y-2 sm:col-span-2">
+                    <Label htmlFor="gender" className="text-sm sm:text-base">
                       Género <span className="text-destructive">*</span>
                     </Label>
                     <Select
@@ -497,7 +508,7 @@ export function GenerateReportDialog({
                         )
                       }
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="h-10 sm:h-11 text-sm sm:text-base">
                         <SelectValue placeholder="Selecciona el género" />
                       </SelectTrigger>
                       <SelectContent>
@@ -679,21 +690,23 @@ export function GenerateReportDialog({
               <FileText className="h-5 w-5 text-primary" />
               Confirmar Generación de Reporte
             </AlertDialogTitle>
-            <AlertDialogDescription className="space-y-2 pt-2">
-              <p className="text-base font-medium text-foreground">
-                ⚠️ Información Importante
-              </p>
-              <p>
-                Revisa cuidadosamente tu información personal y las materias
-                seleccionadas.
-              </p>
-              <p className="text-destructive font-medium">
-                Una vez generado el reporte, NO podrás editar tu información.
-              </p>
-              <p className="text-sm">
-                Si necesitas hacer cambios posteriormente, deberás contactar al
-                administrador del sistema.
-              </p>
+            <AlertDialogDescription asChild>
+              <div className="space-y-2 pt-2">
+                <div className="text-base font-medium text-foreground">
+                  ⚠️ Información Importante
+                </div>
+                <div>
+                  Revisa cuidadosamente tu información personal y las materias
+                  seleccionadas.
+                </div>
+                <div className="text-destructive font-medium">
+                  Una vez generado el reporte, NO podrás editar tu información.
+                </div>
+                <div className="text-sm">
+                  Si necesitas hacer cambios posteriormente, deberás contactar
+                  al administrador del sistema.
+                </div>
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-2 sm:gap-0">
