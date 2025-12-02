@@ -72,7 +72,6 @@ export const studentReportSchema = z.object({
 export const generateReportResponseSchema = z.object({
   message: z.string(),
   student: z.object({
-    id: z.string(),
     identification: z.string(),
     email: z.string(),
     names: z.string(),
@@ -80,8 +79,6 @@ export const generateReportResponseSchema = z.object({
     semester: z.number(),
     cityResidence: z.string(),
     gender: z.enum(["Masculino", "Femenino", "Otro"]),
-    createdAt: z.string(),
-    updatedAt: z.string(),
   }),
   subjectsToHomologate: z.array(subjectSchema),
   subjectsToView: z.array(subjectSchema),

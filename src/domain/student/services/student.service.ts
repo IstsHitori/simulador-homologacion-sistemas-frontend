@@ -124,6 +124,8 @@ export const generatePublicReport = async (
   try {
     const API_URL = import.meta.env.VITE_API_BACKEND;
     const response = await axios.post(`${API_URL}/student/report`, data);
+    console.log(response);
+    
     
     return await fetchAndValidate(
       () => Promise.resolve(response),
