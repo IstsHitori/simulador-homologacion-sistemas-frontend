@@ -24,9 +24,7 @@ export function HomologationResultDialog({
   result,
 }: HomologationResultDialogProps) {
   if (!result) return null;
-  console.log(result.subjectsToView);
   
-
   const handlePrintReport = () => {
     generateHomologationPDF(result);
   };

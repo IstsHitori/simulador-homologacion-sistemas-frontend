@@ -63,7 +63,6 @@ export function CreateStudentDialog({
   const [filterArea, setFilterArea] = useState<string>("all");
   const [filterSemester, setFilterSemester] = useState<string>("all");
   const isEditing = !!student;
-
   const {
     register,
     handleSubmit,
@@ -114,9 +113,9 @@ export function CreateStudentDialog({
       setValue("semester", studentDetails.semester);
       setValue("cityResidence", studentDetails.cityResidence);
       setValue("gender", studentDetails.gender);
-      // Las materias aprobadas son aquellas que pueden homologarse
+      // Pre-seleccionar las materias que el estudiante ya cursó
       setSelectedSubjects(
-        studentDetails.subjectsToHomologate?.map((s) => s.id) || []
+        studentDetails.approvedSubjects?.map((s) => s.id) || []
       );
     } else if (!isEditing) {
       reset();

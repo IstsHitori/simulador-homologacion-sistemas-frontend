@@ -34,6 +34,7 @@ export const studentSchema = z.object({
   gender: z.enum(["Masculino", "Femenino", "Otro"]),
   createdAt: z.string(),
   updatedAt: z.string(),
+  approvedSubjects: z.array(subjectSchema).optional(),
   subjectsToHomologate: z.array(subjectSchema).optional(),
   subjectsToView: z.array(subjectSchema).optional(),
 });
@@ -87,8 +88,6 @@ export interface CreateStudentDto {
     lastNames: string;
     semester: number;
     cityResidence: string;
-    address: string;
-    telephone: string;
     gender: "Masculino" | "Femenino" | "Otro";
   };
   approvedSubjects: {

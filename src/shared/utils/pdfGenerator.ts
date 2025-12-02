@@ -156,7 +156,7 @@ export const generateHomologationPDF = (result: CreateStudentResponse) => {
     yPosition += 5;
     doc.setFontSize(11);
     doc.setTextColor(0, 0, 0);
-    doc.text("Materias Faltantes por Ver", 15, yPosition);
+    doc.text("Materias Pendientes por Cursar", 15, yPosition);
 
     yPosition += 4;
 

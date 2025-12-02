@@ -46,8 +46,13 @@ export const useUpdateStudent = () => {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateStudentDto }) =>
       updateStudent(id, data),
-    onSuccess: (result) => {
+    onSuccess: (result, variables) => {
+      // Invalidar la lista de estudiantes
       queryClient.invalidateQueries({ queryKey: ["students"] });
+      // Invalidar el estudiante específico que fue actualizado
+      queryClient.invalidateQueries({ queryKey: ["student", variables.id] });
+      // Invalidar el reporte del estudiante
+      queryClient.invalidateQueries({ queryKey: ["student-report", variables.id] });
       toast.success(result.message || "Estudiante actualizado correctamente");
     },
     onError: (error: Error) => {
