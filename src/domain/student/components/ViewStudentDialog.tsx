@@ -13,7 +13,6 @@ import {
   Calendar,
   Mail,
   MapPin,
-  Phone,
   User,
   type LucideIcon,
 } from "lucide-react";
@@ -81,19 +80,9 @@ export function ViewStudentDialog({
                 />
                 <InfoItem icon={Mail} label="Email" value={student.email} />
                 <InfoItem
-                  icon={Phone}
-                  label="Teléfono"
-                  value={student.telephone}
-                />
-                <InfoItem
                   icon={MapPin}
                   label="Ciudad"
                   value={student.cityResidence}
-                />
-                <InfoItem
-                  icon={MapPin}
-                  label="Dirección"
-                  value={student.address}
                 />
                 <div className="flex items-start gap-3">
                   <User className="h-5 w-5 text-muted-foreground mt-0.5" />
@@ -114,16 +103,53 @@ export function ViewStudentDialog({
 
             <Separator />
 
-            {/* Materias Aprobadas */}
-            {student.approvedSubjects &&
-              student.approvedSubjects.length > 0 && (
+            {/* Materias a Homologar */}
+            {student.subjectsToHomologate &&
+              student.subjectsToHomologate.length > 0 && (
                 <div className="space-y-3">
                   <h3 className="text-lg font-semibold text-primary">
-                    Materias Aprobadas ({student.approvedSubjects.length})
+                    Materias a Homologar ({student.subjectsToHomologate.length})
                   </h3>
                   <div className="border rounded-lg overflow-hidden bg-muted/20">
                     <div className="divide-y">
-                      {student.approvedSubjects.map((subject) => (
+                      {student.subjectsToHomologate.map((subject) => (
+                        <div
+                          key={subject.id}
+                          className="p-4 hover:bg-background transition-smooth"
+                        >
+                          <div className="flex justify-between items-start gap-4">
+                            <div className="flex-1">
+                              <h4 className="font-semibold">{subject.name}</h4>
+                              <p className="text-sm text-muted-foreground mt-1">
+                                {subject.area.name} • {subject.plan.name}
+                              </p>
+                            </div>
+                            <div className="flex gap-2">
+                              <Badge variant="secondary">
+                                Sem. {subject.semester}
+                              </Badge>
+                              <Badge variant="outline">
+                                {subject.credits} créditos
+                              </Badge>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+            {/* Materias Faltantes por Ver */}
+            {student.subjectsToView &&
+              student.subjectsToView.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold text-primary">
+                    Materias Faltantes por Ver ({student.subjectsToView.length})
+                  </h3>
+                  <div className="border rounded-lg overflow-hidden bg-muted/20">
+                    <div className="divide-y">
+                      {student.subjectsToView.map((subject) => (
                         <div
                           key={subject.id}
                           className="p-4 hover:bg-background transition-smooth"

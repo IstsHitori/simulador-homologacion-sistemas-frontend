@@ -95,23 +95,23 @@ export function HomologationResultDialog({
               </div>
             </div>
 
-            {/* Materias Aprobadas */}
+            {/* Materias Faltantes por Ver */}
             <div className="space-y-3">
               <h3 className="text-lg font-semibold text-primary flex items-center gap-2">
                 <BookOpen className="h-5 w-5" />
-                Materias Aprobadas ({result.approvedSubjects.length})
+                Materias Faltantes por Ver ({result.subjectsToView.length})
               </h3>
               <p className="text-sm text-muted-foreground">
-                Materias que el estudiante ya tiene aprobadas
+                Materias que el estudiante aún debe cursar
               </p>
               <div className="border rounded-lg overflow-hidden bg-muted/20">
-                {result.approvedSubjects.length === 0 ? (
+                {result.subjectsToView.length === 0 ? (
                   <div className="p-8 text-center text-muted-foreground">
-                    No hay materias aprobadas
+                    No hay materias faltantes por ver
                   </div>
                 ) : (
                   <div className="divide-y">
-                    {result.approvedSubjects.map((subject) => (
+                    {result.subjectsToView.map((subject) => (
                       <div
                         key={subject.id}
                         className="p-4 hover:bg-background transition-smooth"

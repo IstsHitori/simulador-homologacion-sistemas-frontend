@@ -31,13 +31,11 @@ export const studentSchema = z.object({
   lastNames: z.string(),
   semester: z.number(),
   cityResidence: z.string(),
-  address: z.string(),
-  telephone: z.string(),
   gender: z.enum(["Masculino", "Femenino", "Otro"]),
   createdAt: z.string(),
   updatedAt: z.string(),
-  approvedSubjects: z.array(subjectSchema).optional(),
   subjectsToHomologate: z.array(subjectSchema).optional(),
+  subjectsToView: z.array(subjectSchema).optional(),
 });
 
 export const createStudentResponseSchema = z.object({
@@ -49,11 +47,10 @@ export const createStudentResponseSchema = z.object({
     lastNames: z.string(),
     semester: z.number(),
     cityResidence: z.string(),
-    telephone: z.string(),
     gender: z.enum(["Masculino", "Femenino", "Otro"]),
   }),
   subjectsToHomologate: z.array(subjectSchema),
-  approvedSubjects: z.array(subjectSchema),
+  subjectsToView: z.array(subjectSchema),
 });
 
 export const studentReportSchema = z.object({
@@ -64,13 +61,11 @@ export const studentReportSchema = z.object({
   lastNames: z.string(),
   semester: z.number(),
   cityResidence: z.string(),
-  address: z.string(),
-  telephone: z.string(),
   gender: z.enum(["Masculino", "Femenino", "Otro"]),
   createdAt: z.string(),
   updatedAt: z.string(),
-  approvedSubjects: z.array(subjectSchema),
   subjectsToHomologate: z.array(subjectSchema),
+  subjectsToView: z.array(subjectSchema),
 });
 
 export const studentListSchema = z.array(studentSchema);

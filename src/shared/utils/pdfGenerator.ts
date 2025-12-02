@@ -59,7 +59,6 @@ export const generateHomologationPDF = (result: CreateStudentResponse) => {
     ["Semestre:", result.student.semester.toString()],
     ["Género:", result.student.gender],
     ["Ciudad:", result.student.cityResidence],
-    ["Teléfono:", result.student.telephone],
   ];
 
   autoTable(doc, {
@@ -152,38 +151,40 @@ export const generateHomologationPDF = (result: CreateStudentResponse) => {
         ?.finalY || yPosition + 50;
   }
 
-  // Materias Aprobadas
-  if (result.approvedSubjects.length > 0) {
+  // Materias Faltantes por Ver
+  if (result.subjectsToView.length > 0) {
     yPosition += 5;
     doc.setFontSize(11);
     doc.setTextColor(0, 0, 0);
-    doc.text("Materias Aprobadas", 15, yPosition);
+    doc.text("Materias Faltantes por Ver", 15, yPosition);
 
     yPosition += 4;
 
-    const approvedData = result.approvedSubjects.map((subject) => [
-      subject.name,
-      subject.area.name,
-      subject.semester.toString(),
-      subject.credits.toString(),
-    ]);
+    const viewData = result.subjectsToView.map(
+      (subject: { name: string; area: { name: string }; semester: number; credits: number }) => [
+        subject.name,
+        subject.area.name,
+        subject.semester.toString(),
+        subject.credits.toString(),
+      ]
+    );
 
-    const subtotalCreditsApproved = result.approvedSubjects.reduce(
-      (sum, subject) => sum + subject.credits,
+    const subtotalCreditsView = result.subjectsToView.reduce(
+      (sum: number, subject: { credits: number }) => sum + subject.credits,
       0
     );
 
-    approvedData.push([
+    viewData.push([
       "SUBTOTAL",
       "",
       "",
-      subtotalCreditsApproved.toString(),
+      subtotalCreditsView.toString(),
     ]);
 
     autoTable(doc, {
       startY: yPosition,
       head: [["Materia", "Área", "Sem.", "Créditos"]],
-      body: approvedData,
+      body: viewData,
       theme: "grid",
       headStyles: {
         fillColor: [0, 0, 0],
@@ -209,7 +210,7 @@ export const generateHomologationPDF = (result: CreateStudentResponse) => {
         3: { cellWidth: 20 },
       },
       didDrawCell: (data) => {
-        if (data.row.index === approvedData.length - 1) {
+        if (data.row.index === viewData.length - 1) {
           data.cell.styles.fontStyle = "bold";
           data.cell.styles.fillColor = [220, 220, 220];
         }

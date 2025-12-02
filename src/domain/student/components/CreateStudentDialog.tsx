@@ -39,8 +39,6 @@ const studentFormSchema = z.object({
   lastNames: z.string().min(1, "Los apellidos son requeridos").max(40),
   semester: z.number().min(1).max(10),
   cityResidence: z.string().min(1, "La ciudad es requerida").max(20),
-  address: z.string().min(1, "La dirección es requerida").max(20),
-  telephone: z.string().min(1, "El teléfono es requerido").max(10),
   gender: z.enum(["Masculino", "Femenino", "Otro"]),
 });
 
@@ -115,11 +113,10 @@ export function CreateStudentDialog({
       setValue("lastNames", studentDetails.lastNames);
       setValue("semester", studentDetails.semester);
       setValue("cityResidence", studentDetails.cityResidence);
-      setValue("address", studentDetails.address);
-      setValue("telephone", studentDetails.telephone);
       setValue("gender", studentDetails.gender);
+      // Las materias aprobadas son aquellas que pueden homologarse
       setSelectedSubjects(
-        studentDetails.approvedSubjects?.map((s) => s.id) || []
+        studentDetails.subjectsToHomologate?.map((s) => s.id) || []
       );
     } else if (!isEditing) {
       reset();
@@ -380,35 +377,6 @@ export function CreateStudentDialog({
                         {errors.cityResidence && (
                           <p className="text-xs text-destructive mt-1">
                             {errors.cityResidence.message}
-                          </p>
-                        )}
-                      </div>
-
-                      <div>
-                        <Label htmlFor="address">Dirección *</Label>
-                        <Input
-                          id="address"
-                          {...register("address")}
-                          placeholder="Calle 10 #20-30"
-                        />
-                        {errors.address && (
-                          <p className="text-xs text-destructive mt-1">
-                            {errors.address.message}
-                          </p>
-                        )}
-                      </div>
-
-                      <div>
-                        <Label htmlFor="telephone">Teléfono *</Label>
-                        <Input
-                          id="telephone"
-                          type="number"
-                          {...register("telephone")}
-                          placeholder="3001234567"
-                        />
-                        {errors.telephone && (
-                          <p className="text-xs text-destructive mt-1">
-                            {errors.telephone.message}
                           </p>
                         )}
                       </div>
