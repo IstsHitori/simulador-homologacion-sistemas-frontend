@@ -386,6 +386,7 @@ export function GenerateReportDialog({
                     </Label>
                     <Input
                       id="identification"
+                      type="number"
                       {...register("identification")}
                       placeholder="Ej: 1234567890"
                       className="h-10 sm:h-11 text-sm sm:text-base"
@@ -617,8 +618,7 @@ export function GenerateReportDialog({
                               {subject.code && subject.code !== "N/A"
                                 ? `${subject.code} - `
                                 : ""}
-                              Sem. {subject.semester} - {subject.credits}{" "}
-                              créd.
+                              Sem. {subject.semester} - {subject.credits} créd.
                             </p>
                             <p className="text-xs text-muted-foreground mt-0.5">
                               {subject.area.name}
