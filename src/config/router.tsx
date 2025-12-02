@@ -9,11 +9,17 @@ import { HomePage } from "@/shared/pages/HomePage";
 import SettingsPage from "@/domain/auth/pages/SettingsPage";
 import { ProtectedRoute } from "@/shared/components/ProtectedRoute";
 import { NotFoundPage } from "@/shared/pages/NotFoundPage";
+import { LandingPage } from "@/shared/pages/LandingPage";
 
 export const router = createBrowserRouter([
-  //Public layout donde esta el login
+  //Public landing page
   {
     path: "/",
+    element: <LandingPage />,
+  },
+  //Public login
+  {
+    path: "/login",
     element: <PublicLayout />,
     children: [
       {

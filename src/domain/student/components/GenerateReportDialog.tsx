@@ -1,0 +1,625 @@
+import { useState, useMemo, useCallback } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { usePlans } from "@/domain/plan/hooks/usePlanQueries";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Spinner } from "@/components/ui/spinner";
+import { Search, FileText } from "lucide-react";
+import type { GenerateReportResponse } from "../types";
+import { toast } from "sonner";
+import { useMutation } from "@tanstack/react-query";
+import { generatePublicReport } from "../services/student.service";
+import { generateHomologationPDF } from "@/shared/utils/pdfGenerator";
+
+const studentFormSchema = z.object({
+  identification: z.string().min(1, "La identificación es requerida").max(11),
+  email: z.string().email("Email inválido").max(100),
+  names: z.string().min(1, "Los nombres son requeridos").max(40),
+  lastNames: z.string().min(1, "Los apellidos son requeridos").max(40),
+  semester: z.number().min(1).max(10),
+  cityResidence: z.string().min(1, "La ciudad es requerida").max(20),
+  gender: z.enum(["Masculino", "Femenino", "Otro"]),
+});
+
+type StudentFormValues = z.infer<typeof studentFormSchema>;
+
+interface GenerateReportDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export function GenerateReportDialog({
+  open,
+  onOpenChange,
+}: GenerateReportDialogProps) {
+  const [selectedSubjects, setSelectedSubjects] = useState<number[]>([]);
+  const [currentStep, setCurrentStep] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterArea, setFilterArea] = useState<string>("all");
+  const [filterSemester, setFilterSemester] = useState<string>("all");
+  const [reportResult, setReportResult] = useState<GenerateReportResponse | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    setValue,
+    watch,
+    trigger,
+  } = useForm<StudentFormValues>({
+    resolver: zodResolver(studentFormSchema),
+    defaultValues: {
+      semester: 1,
+      gender: "Masculino",
+    },
+  });
+
+  const { data: plans, isLoading: plansLoading } = usePlans();
+
+  const generateMutation = useMutation({
+    mutationFn: generatePublicReport,
+    onSuccess: (result) => {
+      setReportResult(result);
+      setCurrentStep(3);
+      toast.success(result.message || "Reporte generado correctamente");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Error al generar el reporte");
+    },
+  });
+
+  const selectedGender = watch("gender");
+  const selectedSemester = watch("semester");
+
+  const handleNextStep = useCallback(async () => {
+    const isValid = await trigger();
+    if (isValid) {
+      setCurrentStep(2);
+    }
+  }, [trigger]);
+
+  const handleClose = useCallback(() => {
+    setCurrentStep(1);
+    setReportResult(null);
+    setSelectedSubjects([]);
+    reset();
+    onOpenChange(false);
+  }, [reset, onOpenChange]);
+
+  const onSubmit = useCallback(
+    async (data: StudentFormValues) => {
+      const payload = {
+        studentData: data,
+        approvedSubjects: selectedSubjects.map((id) => ({
+          approvedSubjectVersionId: id,
+        })),
+      };
+
+      generateMutation.mutate(payload);
+    },
+    [selectedSubjects, generateMutation]
+  );
+
+  const handleGenerateReport = useCallback(async () => {
+    if (selectedSubjects.length === 0) {
+      toast.error("Debes seleccionar al menos una materia aprobada");
+      return;
+    }
+    handleSubmit(onSubmit)();
+  }, [selectedSubjects.length, handleSubmit, onSubmit]);
+
+  const handleSubjectToggle = useCallback((subjectId: number) => {
+    setSelectedSubjects((prev) =>
+      prev.includes(subjectId)
+        ? prev.filter((id) => id !== subjectId)
+        : [...prev, subjectId]
+    );
+  }, []);
+
+  const handlePrintPDF = useCallback(() => {
+    if (!reportResult) return;
+    
+    generateHomologationPDF({
+      message: reportResult.message,
+      student: {
+        identification: reportResult.student.identification,
+        email: reportResult.student.email,
+        names: reportResult.student.names,
+        lastNames: reportResult.student.lastNames,
+        semester: reportResult.student.semester,
+        cityResidence: reportResult.student.cityResidence,
+        gender: reportResult.student.gender,
+      },
+      subjectsToHomologate: reportResult.subjectsToHomologate,
+      subjectsToView: reportResult.subjectsToView,
+    });
+  }, [reportResult]);
+
+  const oldPlanSubjects = useMemo(
+    () => plans?.oldPlan?.subjects || [],
+    [plans?.oldPlan?.subjects]
+  );
+
+  const filteredSubjects = useMemo(
+    () =>
+      oldPlanSubjects.filter((subject) => {
+        const matchesSearch =
+          subject.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          subject.code?.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesArea =
+          filterArea === "all" || subject.area.name === filterArea;
+        const matchesSemester =
+          filterSemester === "all" ||
+          subject.semester.toString() === filterSemester;
+        return matchesSearch && matchesArea && matchesSemester;
+      }),
+    [oldPlanSubjects, searchTerm, filterArea, filterSemester]
+  );
+
+  const uniqueAreas = useMemo(
+    () => Array.from(new Set(oldPlanSubjects.map((s) => s.area.name))),
+    [oldPlanSubjects]
+  );
+
+  if (currentStep === 3 && reportResult) {
+    return (
+      <Dialog open={open} onOpenChange={handleClose}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl flex items-center gap-2">
+              <FileText className="h-6 w-6 text-primary" />
+              Reporte de Homologación Generado
+            </DialogTitle>
+            <DialogDescription>
+              Revisa tu reporte de homologación y descárgalo en PDF
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6 py-4">
+            {/* Información del Estudiante */}
+            <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+              <h3 className="font-semibold text-lg">Información del Estudiante</h3>
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div>
+                  <span className="text-muted-foreground">Identificación:</span>
+                  <p className="font-medium">{reportResult.student.identification}</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Email:</span>
+                  <p className="font-medium">{reportResult.student.email}</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Nombres:</span>
+                  <p className="font-medium">{reportResult.student.names}</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Apellidos:</span>
+                  <p className="font-medium">{reportResult.student.lastNames}</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Semestre:</span>
+                  <p className="font-medium">{reportResult.student.semester}</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Ciudad:</span>
+                  <p className="font-medium">{reportResult.student.cityResidence}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Materias a Homologar */}
+            <div>
+              <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
+                <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-sm">
+                  {reportResult.subjectsToHomologate.length}
+                </span>
+                Materias a Homologar
+              </h3>
+              <ScrollArea className="h-[200px] border rounded-lg p-4">
+                {reportResult.subjectsToHomologate.length === 0 ? (
+                  <p className="text-muted-foreground text-center py-8">
+                    No hay materias para homologar
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {reportResult.subjectsToHomologate.map((subject) => (
+                      <div
+                        key={subject.id}
+                        className="p-3 bg-green-50 border border-green-200 rounded-lg"
+                      >
+                        <p className="font-medium">{subject.name}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Semestre {subject.semester} - {subject.credits} créditos
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </ScrollArea>
+            </div>
+
+            {/* Materias Faltantes por Ver */}
+            <div>
+              <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
+                <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded text-sm">
+                  {reportResult.subjectsToView.length}
+                </span>
+                Materias Faltantes por Ver
+              </h3>
+              <ScrollArea className="h-[200px] border rounded-lg p-4">
+                {reportResult.subjectsToView.length === 0 ? (
+                  <p className="text-muted-foreground text-center py-8">
+                    ¡No hay materias faltantes!
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {reportResult.subjectsToView.map((subject) => (
+                      <div
+                        key={subject.id}
+                        className="p-3 bg-orange-50 border border-orange-200 rounded-lg"
+                      >
+                        <p className="font-medium">{subject.name}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Semestre {subject.semester} - {subject.credits} créditos
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </ScrollArea>
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3 mt-4">
+            <Button variant="outline" onClick={handleClose}>
+              Cerrar
+            </Button>
+            <Button onClick={handlePrintPDF}>
+              <FileText className="h-4 w-4 mr-2" />
+              Imprimir Reporte PDF
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={handleClose}>
+      <DialogContent
+        className={`max-w-6xl ${
+          currentStep === 2 && "min-w-6xl"
+        } h-[90vh] overflow-hidden flex flex-col`}
+      >
+        <DialogHeader>
+          <DialogTitle className="text-2xl">
+            Generar Reporte de Homologación
+          </DialogTitle>
+          <DialogDescription>
+            {currentStep === 1
+              ? "Paso 1 de 2: Completa tus datos personales"
+              : "Paso 2 de 2: Selecciona las materias que aprobaste en tu plan anterior"}
+          </DialogDescription>
+          <div className="flex items-center gap-2 mt-2">
+            <div
+              className={`flex-1 h-1.5 rounded-full transition-colors ${
+                currentStep >= 1 ? "bg-primary" : "bg-muted"
+              }`}
+            />
+            <div
+              className={`flex-1 h-1.5 rounded-full transition-colors ${
+                currentStep >= 2 ? "bg-primary" : "bg-muted"
+              }`}
+            />
+          </div>
+        </DialogHeader>
+
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex-1 overflow-hidden flex flex-col"
+        >
+          {currentStep === 1 && (
+            <ScrollArea className="flex-1 px-1">
+              <div className="space-y-4 pr-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="identification">
+                      Identificación <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="identification"
+                      {...register("identification")}
+                      placeholder="Ej: 1234567890"
+                    />
+                    {errors.identification && (
+                      <p className="text-sm text-destructive">
+                        {errors.identification.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="email">
+                      Email <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      {...register("email")}
+                      placeholder="ejemplo@correo.com"
+                    />
+                    {errors.email && (
+                      <p className="text-sm text-destructive">
+                        {errors.email.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="names">
+                      Nombres <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="names"
+                      {...register("names")}
+                      placeholder="Nombres completos"
+                    />
+                    {errors.names && (
+                      <p className="text-sm text-destructive">
+                        {errors.names.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="lastNames">
+                      Apellidos <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="lastNames"
+                      {...register("lastNames")}
+                      placeholder="Apellidos completos"
+                    />
+                    {errors.lastNames && (
+                      <p className="text-sm text-destructive">
+                        {errors.lastNames.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="semester">
+                      Semestre <span className="text-destructive">*</span>
+                    </Label>
+                    <Select
+                      value={selectedSemester?.toString()}
+                      onValueChange={(value) =>
+                        setValue("semester", parseInt(value))
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona el semestre" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((sem) => (
+                          <SelectItem key={sem} value={sem.toString()}>
+                            Semestre {sem}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {errors.semester && (
+                      <p className="text-sm text-destructive">
+                        {errors.semester.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="cityResidence">
+                      Ciudad de Residencia{" "}
+                      <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="cityResidence"
+                      {...register("cityResidence")}
+                      placeholder="Ej: Valledupar"
+                    />
+                    {errors.cityResidence && (
+                      <p className="text-sm text-destructive">
+                        {errors.cityResidence.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2 col-span-2">
+                    <Label htmlFor="gender">
+                      Género <span className="text-destructive">*</span>
+                    </Label>
+                    <Select
+                      value={selectedGender}
+                      onValueChange={(value) =>
+                        setValue(
+                          "gender",
+                          value as "Masculino" | "Femenino" | "Otro"
+                        )
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona el género" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Masculino">Masculino</SelectItem>
+                        <SelectItem value="Femenino">Femenino</SelectItem>
+                        <SelectItem value="Otro">Otro</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {errors.gender && (
+                      <p className="text-sm text-destructive">
+                        {errors.gender.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </ScrollArea>
+          )}
+
+          {currentStep === 2 && (
+            <div className="flex-1 overflow-hidden flex flex-col gap-4 min-h-0">
+              <div className="space-y-4 flex-shrink-0">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Buscar materia..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-9"
+                    />
+                  </div>
+                  <Select value={filterArea} onValueChange={setFilterArea}>
+                    <SelectTrigger className="w-full sm:w-[200px]">
+                      <SelectValue placeholder="Filtrar por área" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todas las áreas</SelectItem>
+                      {uniqueAreas.map((area) => (
+                        <SelectItem key={area} value={area}>
+                          {area}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select
+                    value={filterSemester}
+                    onValueChange={setFilterSemester}
+                  >
+                    <SelectTrigger className="w-full sm:w-[150px]">
+                      <SelectValue placeholder="Semestre" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todos</SelectItem>
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((sem) => (
+                        <SelectItem key={sem} value={sem.toString()}>
+                          Semestre {sem}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex items-center justify-between text-sm">
+                  <p className="text-muted-foreground">
+                    {selectedSubjects.length} de {oldPlanSubjects.length}{" "}
+                    materias seleccionadas
+                  </p>
+                </div>
+              </div>
+
+              {plansLoading ? (
+                <div className="flex-1 flex items-center justify-center min-h-0">
+                  <Spinner />
+                </div>
+              ) : (
+                <div className="flex-1 min-h-0 border rounded-lg overflow-hidden">
+                  <ScrollArea className="h-full">
+                    <div className="p-4 space-y-2">
+                      {filteredSubjects.length === 0 ? (
+                        <p className="text-center text-muted-foreground py-8">
+                          No se encontraron materias
+                        </p>
+                      ) : (
+                        filteredSubjects.map((subject) => (
+                          <label
+                            key={subject.id}
+                            className="flex items-start gap-3 p-3 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors"
+                          >
+                            <Checkbox
+                              checked={selectedSubjects.includes(subject.id)}
+                              onCheckedChange={() =>
+                                handleSubjectToggle(subject.id)
+                              }
+                              className="mt-1"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium">{subject.name}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {subject.code} - Semestre {subject.semester} -{" "}
+                                {subject.credits} créditos
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {subject.area.name}
+                              </p>
+                            </div>
+                          </label>
+                        ))
+                      )}
+                    </div>
+                  </ScrollArea>
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="flex justify-between pt-4 border-t">
+            {currentStep === 1 ? (
+              <>
+                <Button type="button" variant="outline" onClick={handleClose}>
+                  Cancelar
+                </Button>
+                <Button type="button" onClick={handleNextStep}>
+                  Siguiente
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setCurrentStep(1)}
+                >
+                  Atrás
+                </Button>
+                <Button
+                  type="button"
+                  onClick={handleGenerateReport}
+                  disabled={generateMutation.isPending}
+                >
+                  {generateMutation.isPending ? (
+                    <>
+                      <Spinner className="h-4 w-4 mr-2" />
+                      Generando...
+                    </>
+                  ) : (
+                    "Generar Reporte"
+                  )}
+                </Button>
+              </>
+            )}
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
