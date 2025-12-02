@@ -1,8 +1,21 @@
 import { motion } from "motion/react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, GraduationCap, Calendar, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  BookOpen,
+  GraduationCap,
+  Calendar,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { usePlans } from "../hooks/usePlanQueries";
 import { Spinner } from "@/components/ui/spinner";
 import { Input } from "@/components/ui/input";
@@ -103,8 +116,8 @@ function SubjectsTable({
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
             <div className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
               Mostrando {startIndex + 1} a{" "}
-              {Math.min(startIndex + ITEMS_PER_PAGE, filteredSubjects.length)} de{" "}
-              {filteredSubjects.length} materias
+              {Math.min(startIndex + ITEMS_PER_PAGE, filteredSubjects.length)}{" "}
+              de {filteredSubjects.length} materias
             </div>
             <div className="flex gap-2 items-center">
               <Button
@@ -177,15 +190,16 @@ export function PlansPage() {
           filterCredits === "all" ||
           (filterCredits === "max4" && subject.credits <= 4) ||
           subject.credits.toString() === filterCredits;
-        return matchesSearch && matchesArea && matchesSemester && matchesCredits;
+        return (
+          matchesSearch && matchesArea && matchesSemester && matchesCredits
+        );
       });
     };
   }, [searchTerm, filterArea, filterSemester, filterCredits]);
 
   // Get unique areas and semesters
   const allSubjects = useMemo(
-    () =>
-      plans ? [...plans.oldPlan.subjects, ...plans.newPlan.subjects] : [],
+    () => (plans ? [...plans.oldPlan.subjects, ...plans.newPlan.subjects] : []),
     [plans]
   );
 
@@ -334,12 +348,18 @@ export function PlansPage() {
       >
         <Tabs defaultValue="old" className="w-full">
           <TabsList className="grid w-full grid-cols-2 max-w-full sm:max-w-md">
-            <TabsTrigger value="old" className="gap-1 sm:gap-2 text-xs sm:text-sm">
+            <TabsTrigger
+              value="old"
+              className="gap-1 sm:gap-2 text-xs sm:text-sm"
+            >
               <BookOpen className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden xs:inline">Plan Actual</span>
               <span className="xs:hidden">Actual</span>
             </TabsTrigger>
-            <TabsTrigger value="new" className="gap-1 sm:gap-2 text-xs sm:text-sm">
+            <TabsTrigger
+              value="new"
+              className="gap-1 sm:gap-2 text-xs sm:text-sm"
+            >
               <BookOpen className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="hidden xs:inline">Plan Propuesto</span>
               <span className="xs:hidden">Propuesto</span>
@@ -347,7 +367,10 @@ export function PlansPage() {
           </TabsList>
 
           {/* Plan Actual */}
-          <TabsContent value="old" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
+          <TabsContent
+            value="old"
+            className="space-y-4 sm:space-y-6 mt-4 sm:mt-6"
+          >
             <Card className="shadow-sm">
               <CardHeader className="p-4 sm:p-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-4">
@@ -365,7 +388,10 @@ export function PlansPage() {
                       </span>
                     </CardDescription>
                   </div>
-                  <Badge variant="default" className="text-xs sm:text-sm md:text-base px-3 py-1 sm:px-4 sm:py-2 shrink-0">
+                  <Badge
+                    variant="default"
+                    className="text-xs sm:text-sm md:text-base px-3 py-1 sm:px-4 sm:py-2 shrink-0"
+                  >
                     {plans?.oldPlan.quantity} Materias
                   </Badge>
                 </div>
@@ -382,7 +408,10 @@ export function PlansPage() {
           </TabsContent>
 
           {/* Plan Propuesto */}
-          <TabsContent value="new" className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
+          <TabsContent
+            value="new"
+            className="space-y-4 sm:space-y-6 mt-4 sm:mt-6"
+          >
             <Card className="shadow-sm">
               <CardHeader className="p-4 sm:p-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-4">
@@ -400,7 +429,10 @@ export function PlansPage() {
                       </span>
                     </CardDescription>
                   </div>
-                  <Badge variant="default" className="text-xs sm:text-sm md:text-base px-3 py-1 sm:px-4 sm:py-2 shrink-0">
+                  <Badge
+                    variant="default"
+                    className="text-xs sm:text-sm md:text-base px-3 py-1 sm:px-4 sm:py-2 shrink-0"
+                  >
                     {plans?.newPlan.quantity} Materias
                   </Badge>
                 </div>
