@@ -217,21 +217,33 @@ export const generateHomologationPDF = (result: CreateStudentResponse) => {
       },
       margin: { left: 15, right: 15 },
     });
+
+    yPosition =
+      (doc as jsPDF & { lastAutoTable?: { finalY: number } }).lastAutoTable
+        ?.finalY || yPosition + 50;
   }
 
   // Firma del Estudiante - Sección profesional
   const pageHeight = doc.internal.pageSize.height;
-  const signatureStartY = pageHeight - 45;
+  const finalYPosition = yPosition + 30; // Añadir más espacio después de la última tabla
+  
+  // Verificar si hay espacio suficiente en la página actual, si no, agregar nueva página
+  if (finalYPosition + 30 > pageHeight - 20) {
+    doc.addPage();
+    yPosition = 40; // Comenzar con más espacio en la nueva página
+  } else {
+    yPosition = finalYPosition;
+  }
   
   // Línea horizontal para firma
   doc.setLineWidth(0.5);
   doc.setDrawColor(0, 0, 0);
-  doc.line(15, signatureStartY, 70, signatureStartY);
+  doc.line(15, yPosition, 70, yPosition);
   
   // Etiqueta debajo de la línea
   doc.setFontSize(10);
   doc.setTextColor(0, 0, 0);
-  doc.text("Firma del Estudiante", 42.5, signatureStartY + 8, { align: "center" });
+  doc.text("Firma del Estudiante", 42.5, yPosition + 8, { align: "center" });
 
   // Footer - optimizado
   const pageCount = doc.getNumberOfPages();
