@@ -111,11 +111,14 @@ export function GenerateReportDialog({
   }, [trigger]);
 
   const handleClose = useCallback(() => {
-    setCurrentStep(1);
-    setReportResult(null);
-    setSelectedSubjects([]);
-    reset();
-    onOpenChange(false);
+    // Pequeño delay para asegurar que el DOM termine de actualizar
+    setTimeout(() => {
+      setCurrentStep(1);
+      setReportResult(null);
+      setSelectedSubjects([]);
+      reset();
+      onOpenChange(false);
+    }, 0);
   }, [reset, onOpenChange]);
 
   const onSubmit = useCallback(
@@ -143,7 +146,10 @@ export function GenerateReportDialog({
 
   const handleConfirmGenerate = useCallback(() => {
     setShowConfirmAlert(false);
-    handleSubmit(onSubmit)();
+    // Pequeño delay para asegurar que el AlertDialog se cierre correctamente
+    setTimeout(() => {
+      handleSubmit(onSubmit)();
+    }, 100);
   }, [handleSubmit, onSubmit]);
 
   const handleSubjectToggle = useCallback((subjectId: number) => {
