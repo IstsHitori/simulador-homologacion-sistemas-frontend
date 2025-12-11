@@ -462,9 +462,12 @@ export function GenerateReportDialog({
                     </Label>
                     <Select
                       value={selectedSemester?.toString()}
-                      onValueChange={(value) =>
-                        setValue("semester", parseInt(value))
-                      }
+                      onValueChange={(value) => {
+                        // Usar setTimeout para evitar problemas con el DOM
+                        setTimeout(() => {
+                          setValue("semester", parseInt(value));
+                        }, 0);
+                      }}
                     >
                       <SelectTrigger className="h-10 sm:h-11 text-sm sm:text-base">
                         <SelectValue placeholder="Semestre" />
@@ -511,12 +514,15 @@ export function GenerateReportDialog({
                     </Label>
                     <Select
                       value={selectedGender}
-                      onValueChange={(value) =>
-                        setValue(
-                          "gender",
-                          value as "Masculino" | "Femenino" | "Otro"
-                        )
-                      }
+                      onValueChange={(value) => {
+                        // Usar setTimeout para evitar problemas con el DOM
+                        setTimeout(() => {
+                          setValue(
+                            "gender",
+                            value as "Masculino" | "Femenino" | "Otro"
+                          );
+                        }, 0);
+                      }}
                     >
                       <SelectTrigger className="h-10 sm:h-11 text-sm sm:text-base">
                         <SelectValue placeholder="Selecciona el género" />
@@ -552,7 +558,12 @@ export function GenerateReportDialog({
                   />
                 </div>
                 <div className="flex gap-2">
-                  <Select value={filterArea} onValueChange={setFilterArea}>
+                  <Select
+                    value={filterArea}
+                    onValueChange={(value) => {
+                      setTimeout(() => setFilterArea(value), 0);
+                    }}
+                  >
                     <SelectTrigger className="flex-1 text-sm h-9">
                       <SelectValue placeholder="Área" />
                     </SelectTrigger>
@@ -567,7 +578,9 @@ export function GenerateReportDialog({
                   </Select>
                   <Select
                     value={filterSemester}
-                    onValueChange={setFilterSemester}
+                    onValueChange={(value) => {
+                      setTimeout(() => setFilterSemester(value), 0);
+                    }}
                   >
                     <SelectTrigger className="flex-1 text-sm h-9">
                       <SelectValue placeholder="Semestre" />
